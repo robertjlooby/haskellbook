@@ -1,0 +1,53 @@
+defaults: &defaults
+  working_directory: ~/haskellbook
+  docker:
+    - image: fpco/stack-build:lts-10.7
+
+version: 2
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-stack-cache-{{ checksum "stack.yaml" }}-{{ checksum "haskellbook.cabal" }}
+      - run: stack setup
+      - run:
+          command: stack build -j1
+          timeout: 6000
+      - run: stack test
+      - save_cache:
+          key: v1-stack-cache-{{ checksum "stack.yaml" }}-{{ checksum "haskellbook.cabal" }}
+          paths:
+            - ~/.stack
+            - .stack-work
+  release:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-stack-cache-{{ checksum "stack.yaml" }}-{{ checksum "haskellbook.cabal" }}
+      - run:
+          command: |
+            stack exec haskellbook -- build
+            mv _site docs
+            git add docs
+            git config --global user.email "CircleCI"
+            git commit -m"Add compiled site files"
+            git push --force git@github.com:robertjlooby/haskellbook.git HEAD:refs/heads/master
+
+
+workflows:
+  version: 2
+  build-and-release:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: master
+      - release:
+          requires:
+            - build
+          filters:
+            branches:
+              only: source
