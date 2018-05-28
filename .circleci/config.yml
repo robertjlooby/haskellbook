@@ -10,7 +10,10 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-stack-cache-{{ checksum "stack.yaml" }}-{{ checksum "haskellbook.cabal" }}
+          keys:
+            - v1-stack-cache-{{ checksum "stack.yaml" }}-{{ checksum "haskellbook.cabal" }}
+            - v1-stack-cache-{{ checksum "stack.yaml" }}-
+            - v1-stack-cache-
       - run: stack setup
       - run:
           command: stack build -j1
@@ -26,7 +29,10 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-stack-cache-{{ checksum "stack.yaml" }}-{{ checksum "haskellbook.cabal" }}
+          keys:
+            - v1-stack-cache-{{ checksum "stack.yaml" }}-{{ checksum "haskellbook.cabal" }}
+            - v1-stack-cache-{{ checksum "stack.yaml" }}-
+            - v1-stack-cache-
       - run:
           command: |
             stack exec haskellbook -- build
