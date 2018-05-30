@@ -20,11 +20,13 @@ executable haskellbook
   other-modules:       Chapter06
                      , Chapter07
                      , Chapter09
+                     , Chapter10
   default-language:    Haskell2010
   ghc-options:         -threaded
   build-depends:       base >= 4.7 && < 5
                      , hakyll
                      , hspec
+                     , time
 test-suite spec
   main-is:             spec.hs
   hs-source-dirs:      .
@@ -32,8 +34,10 @@ test-suite spec
   other-modules:       Chapter06
                      , Chapter07
                      , Chapter09
+                     , Chapter10
   default-language:    Haskell2010
   type:                exitcode-stdio-1.0
   ghc-options:         -threaded
   build-depends:       base >= 4.7 && < 5
                      , hspec
+                     , time
