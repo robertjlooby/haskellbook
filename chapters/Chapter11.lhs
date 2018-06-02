@@ -120,6 +120,119 @@ capitalizeWords = map (\word@(a:as) -> (word, toUpper a : as)) . words
 capitalizeWord :: String -> String
 capitalizeWord (a:as) = toUpper a : as
 
+capitalizeParagraph :: String -> String
+capitalizeParagraph s = unwords $ zipWith capFirstWordOfSentence (".":theWords) theWords
+  where
+    theWords = words s
+    capFirstWordOfSentence s s'
+      | last s == '.' = capitalizeWord s'
+      | otherwise = s'
+
+type Digit = Char
+type Presses = Int
+type Tap = (Digit, Presses)
+data DaPhone = DaPhone Tap [(Char, Tap)]
+
+thePhone :: DaPhone
+thePhone = DaPhone ('*', 1)
+                   [ ('a', ('2', 1))
+                   , ('b', ('2', 2))
+                   , ('c', ('2', 3))
+
+                   , ('d', ('3', 1))
+                   , ('e', ('3', 2))
+                   , ('f', ('3', 3))
+
+                   , ('g', ('4', 1))
+                   , ('h', ('4', 2))
+                   , ('i', ('4', 3))
+
+                   , ('j', ('5', 1))
+                   , ('k', ('5', 2))
+                   , ('l', ('5', 3))
+
+                   , ('m', ('6', 1))
+                   , ('n', ('6', 2))
+                   , ('o', ('6', 3))
+
+                   , ('p', ('7', 1))
+                   , ('q', ('7', 2))
+                   , ('r', ('7', 3))
+                   , ('s', ('7', 4))
+
+                   , ('t', ('8', 1))
+                   , ('u', ('8', 2))
+                   , ('v', ('8', 3))
+
+                   , ('w', ('9', 1))
+                   , ('x', ('9', 2))
+                   , ('y', ('9', 3))
+                   , ('z', ('9', 4))
+
+                   , ('+', ('0', 1))
+                   , (' ', ('0', 2))
+
+                   , ('.', ('#', 1))
+                   , (',', ('#', 2))
+                   ]
+
+reverseTaps :: DaPhone -> Char -> [(Digit, Presses)]
+reverseTaps daPhone@(DaPhone shiftTap keyMap) c
+  | elem c ['A'..'Z'] = shiftTap : reverseTaps daPhone (toLower c)
+  | otherwise = case lookup c keyMap of
+                  Nothing -> []
+                  Just tap -> [tap]
+
+cellPhonesDead :: DaPhone -> String -> [(Digit, Presses)]
+cellPhonesDead daPhone message = foldr ((++) . reverseTaps daPhone) [] message
+
+fingerTaps :: [(Digit, Presses)] -> Presses
+fingerTaps taps = foldr ((+) . snd) 0 taps
+
+addToCounts :: Eq a => a -> [(a, Int)] -> [(a, Int)]
+addToCounts a [] = [(a, 1)]
+addToCounts a ((a', count):as)
+  | a == a' = (a', count + 1) : as
+  | otherwise = (a', count) : addToCounts a as
+
+maxVal :: a -> [(a, Int)] -> a
+maxVal def counts = fst $ go counts (def, 0)
+  where
+    go [] (c, cCount) = (c, cCount)
+    go ((c, cCount):cs) (c', c'Count)
+      | c'Count > cCount = go cs (c', c'Count)
+      | otherwise = go cs (c, cCount)
+
+mostPopularLetter :: String -> Char
+mostPopularLetter message = maxVal '~' counts
+  where
+    taps = cellPhonesDead thePhone message
+    digitPresses = foldr (\(c, t) dp -> replicate t c ++ dp) "" taps
+    counts :: [(Char, Int)]
+    counts = foldr addToCounts [] digitPresses
+
+coolestLtr :: [String] -> Char
+coolestLtr = mostPopularLetter . unwords
+
+coolestWord :: [String] -> String
+coolestWord = maxVal "" . foldr addToCounts [] . foldr ((++) . words) []
+
+data Expr
+  = Lit Integer
+  | Add Expr Expr
+
+eval :: Expr -> Integer
+eval (Lit i) = i
+eval (Add e1 e2) = eval e1 + eval e2
+
+printExpr :: Expr -> String
+printExpr (Lit i) = show i
+printExpr (Add e1 e2) = printExpr e1 ++ " + " ++ printExpr e2
+
+a1 = Add (Lit 9001) (Lit 1)
+a2 = Add a1 (Lit 20001)
+a3 = Add (Lit 1) a2
+
 spec :: SpecWith ()
 spec = do
   describe "vehicles" $ do
@@ -201,4 +314,60 @@ spec = do
       capitalizeWord "hello" `shouldBe` "Hello"
     it "for a cap word" $
       capitalizeWord "Hello" `shouldBe` "Hello"
+
+  describe "capitalizeParagraph" $ do
+    it "for a paragraph" $
+      capitalizeParagraph "blah blah. woot ha. last." `shouldBe` "Blah blah. Woot ha. Last."
+
+  describe "phone exercise" $ do
+    describe "reverseTaps" $ do
+      it "for an 'a'" $
+        reverseTaps thePhone 'a' `shouldBe` [('2', 1)]
+      it "for an 'A'" $
+        reverseTaps thePhone 'A' `shouldBe` [('*', 1), ('2', 1)]
+      it "for an 'Z'" $
+        reverseTaps thePhone 'Z' `shouldBe` [('*', 1), ('9', 4)]
+      it "for a ' '" $
+        reverseTaps thePhone ' ' `shouldBe` [('0', 2)]
+      it "for a '.'" $
+        reverseTaps thePhone '.' `shouldBe` [('#', 1)]
+
+    describe "cellPhonesDead" $ do
+      it "for 'Hello.'" $
+        cellPhonesDead thePhone "Hello." `shouldBe` [('*', 1), ('4', 2), ('3', 2), ('5', 3), ('5', 3), ('6', 3), ('#', 1)]
+
+    describe "fingerTaps" $ do
+      it "for 'Hello.'" $
+        fingerTaps [('*', 1), ('4', 2), ('3', 2), ('5', 3), ('5', 3), ('6', 3), ('#', 1)] `shouldBe` 15
+
+    describe "mostPopularLetter" $ do
+      it "for 'Hello.'" $
+        mostPopularLetter "Hello." `shouldBe` '5'
+      it "for 'aaaz'" $
+        mostPopularLetter "aaaz" `shouldBe` '9'
+
+    describe "coolestLtr" $ do
+      it "for ['Hello.']" $
+        coolestLtr ["Hello."] `shouldBe` '5'
+      it "for ['aaa', 'z']" $
+        coolestLtr ["aaa", "z"] `shouldBe` '9'
+
+    describe "coolestWord" $ do
+      it "for ['hello', 'hi there', 'hello you']" $
+        coolestWord ["hello", "hi there", "hello you"] `shouldBe` "hello"
+      it "for ['a a', 'b b', 'c c c']" $
+        coolestWord ["a a", "b b", "c c c"] `shouldBe` "c"
+
+  describe "Hutton's Razor" $ do
+    describe "eval" $ do
+      it "for a lit" $
+        eval (Lit 9001) `shouldBe` 9001
+      it "a sum of two" $
+        eval (Add (Lit 1) (Lit 9001)) `shouldBe` 9002
+      it "for the example" $
+        eval a3 `shouldBe` 29004
+
+    describe "printExpr" $ do
+      it "the example" $
+        printExpr a3 `shouldBe` "1 + 9001 + 1 + 20001"
 \end{code}
