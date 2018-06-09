@@ -15,8 +15,12 @@ pushes it up where it's hosted on GitHub Pages at
 ### Executing problems
 
 1. `stack repl`
-1. `:load chapters/chapter<number>.lhs`
+1. `:load chapters/Chapter<number>.lhs`
 
 ### Running tests
 
 1. `stack test`
+
+### Playing Chapter 13 hangman game
+
+1. `stack exec hangman`
