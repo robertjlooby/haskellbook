@@ -15,12 +15,14 @@ import System.Exit (exitSuccess)
 import System.Random (randomRIO)
 import Test.Hspec
 
-type WordList = [String]
+newtype WordList =
+  Wordlist [String]
+  deriving (Eq, Show)
 
 allWords :: IO WordList
 allWords = do
   dict <- readFile "/usr/share/dict/words"
-  return (lines dict)
+  return . Wordlist $ (lines dict)
 
 minWordLength :: Int
 minWordLength = 5
@@ -30,14 +32,14 @@ maxWordLength = 9
 
 gameWords :: IO WordList
 gameWords = do
-  aw <- allWords
-  return (filter gameLength aw)
+  (Wordlist aw) <- allWords
+  return . Wordlist $ (filter gameLength aw)
   where gameLength w =
           let l = length w
           in  l >= minWordLength && l < maxWordLength
 
 randomWord :: WordList -> IO String
-randomWord wl = do
+randomWord (Wordlist wl) = do
   randomIndex <- randomRIO (0, length wl - 1)
   return $ wl !! randomIndex
 
