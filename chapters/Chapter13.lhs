@@ -12,6 +12,7 @@ import Data.Char (toLower)
 import Data.Maybe (isJust)
 import Data.List (intersperse)
 import System.Exit (exitSuccess)
+import System.IO (BufferMode(NoBuffering), hSetBuffering, stdout)
 import System.Random (randomRIO)
 import Test.Hspec
 
@@ -120,6 +121,7 @@ runGame puzzle = forever $ do
 
 main' :: IO ()
 main' = do
+  hSetBuffering stdout NoBuffering
   word <- randomWord'
   let puzzle = freshPuzzle (fmap toLower word)
   runGame puzzle
