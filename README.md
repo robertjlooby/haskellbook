@@ -21,6 +21,10 @@ pushes it up where it's hosted on GitHub Pages at
 
 1. `stack test`
 
+### Run Chapter 11 Vigenere Cipher
+
+1. `stack exec vigenere-cipher`
+
 ### Playing Chapter 13 hangman game
 
 1. `stack exec hangman`

@@ -43,6 +43,16 @@ executable hangman
                      , hspec
                      , random
 
+executable vigenere-cipher
+  main-is:             VigenereCipher.hs
+  hs-source-dirs:      mains
+                     , chapters
+  other-modules:       Chapter11
+  default-language:    Haskell2010
+  ghc-options:         -threaded
+  build-depends:       base >= 4.7 && < 5
+                     , hspec
+
 test-suite spec
   main-is:             spec.hs
   hs-source-dirs:      .
