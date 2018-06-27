@@ -93,9 +93,17 @@ handleGuess puzzle guess = do
       putStrLn "This character wasn't in the word, try again"
       return (fillInCharacter puzzle guess)
 
+isGameOver :: Puzzle -> Bool
+isGameOver (Puzzle wordToGuess _ guessed) =
+  foldr countIfNotInWord 0 guessed >= 7
+  where
+    countIfNotInWord c acc
+      | elem c wordToGuess = acc
+      | otherwise = acc + 1
+
 gameOver :: Puzzle -> IO ()
-gameOver (Puzzle wordToGuess _ guessed) =
-  if (length guessed) > 7 then
+gameOver puzzle@(Puzzle wordToGuess _ guessed) =
+  if isGameOver puzzle then
     do putStrLn "You lose!"
        putStrLn $ "The word was: " ++ wordToGuess
        exitSuccess
@@ -143,6 +151,14 @@ spec = do
       alreadyGuessed (Puzzle "h" [Nothing] ['z']) 'z' `shouldBe` True
     it "for not found" $
       alreadyGuessed (Puzzle "h" [Nothing] []) 'h' `shouldBe` False
+
+  describe "isGameOver" $ do
+    it "for less than 7 guesses" $
+      isGameOver (Puzzle "h" [Nothing] "abcdef") `shouldBe` False
+    it "for 7 incorrect guesses" $
+      isGameOver (Puzzle "h" [Nothing] "abcdefg") `shouldBe` True
+    it "for 6 incorrect guesses and a correct guess" $
+      isGameOver (Puzzle "hz" [Just 'h', Nothing] "abcdefh") `shouldBe` False
 
   describe "renderPuzzleChar" $ do
     it "for Nothing" $
