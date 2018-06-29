@@ -55,7 +55,7 @@ unCypher _ "" = ""
 unCypher n (c:cs)
   | elem c ['a'..'z'] = shift lowerAOffset c : unCypher n cs
   | elem c ['A'..'Z'] = shift upperAOffset c : unCypher n cs
-  | otherwise = c : cypher n cs
+  | otherwise = c : unCypher n cs
   where
     lowerAOffset = ord 'a'
     upperAOffset = ord 'A'

@@ -118,6 +118,7 @@ capitalizeWords :: String -> [(String, String)]
 capitalizeWords = map (\word@(a:as) -> (word, toUpper a : as)) . words
 
 capitalizeWord :: String -> String
+capitalizeWord "" = ""
 capitalizeWord (a:as) = toUpper a : as
 
 capitalizeParagraph :: String -> String

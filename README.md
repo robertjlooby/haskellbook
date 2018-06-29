@@ -36,3 +36,7 @@ pushes it up where it's hosted on GitHub Pages at
 ### Running Chapter 13 person validator
 
 1. `stack exec person`
+
+### Running Chapter 14 morse code
+
+1. `stack exec morse`
