@@ -51,6 +51,14 @@ executable palindrome
   build-depends:       base >= 4.7 && < 5
                      , hspec
 
+executable person
+  main-is:             PersonValidator.hs
+  hs-source-dirs:      mains
+  default-language:    Haskell2010
+  ghc-options:         -threaded
+  build-depends:       base >= 4.7 && < 5
+                     , hspec
+
 executable vigenere-cipher
   main-is:             VigenereCipher.hs
   hs-source-dirs:      mains

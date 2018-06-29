@@ -32,3 +32,7 @@ pushes it up where it's hosted on GitHub Pages at
 ### Running Chapter 13 palindrome checker
 
 1. `stack exec palindrome`
+
+### Running Chapter 13 person validator
+
+1. `stack exec person`
