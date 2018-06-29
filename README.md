@@ -28,3 +28,7 @@ pushes it up where it's hosted on GitHub Pages at
 ### Playing Chapter 13 hangman game
 
 1. `stack exec hangman`
+
+### Running Chapter 13 palindrome checker
+
+1. `stack exec palindrome`
