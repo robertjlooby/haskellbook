@@ -1,7 +1,7 @@
 defaults: &defaults
   working_directory: ~/haskellbook
   docker:
-    - image: fpco/stack-build:lts-11.10
+    - image: fpco/stack-build:lts-12.0
 
 version: 2
 jobs:
