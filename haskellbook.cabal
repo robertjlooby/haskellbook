@@ -27,6 +27,7 @@ executable haskellbook
                      , Chapter14
                      , Chapter15
                      , Chapter16
+                     , Chapter17
   default-language:    Haskell2010
   ghc-options:         -threaded
   build-depends:       base >= 4.7 && < 5
@@ -104,6 +105,7 @@ test-suite spec
                      , Chapter14
                      , Chapter15
                      , Chapter16
+                     , Chapter17
   default-language:    Haskell2010
   type:                exitcode-stdio-1.0
   ghc-options:         -threaded
