@@ -9,6 +9,7 @@ import Chapter14
 import Chapter15
 import Chapter16
 import Chapter17
+import Chapter18
 import Test.Hspec
 
 main :: IO ()
@@ -25,3 +26,4 @@ main =
     Chapter15.spec
     Chapter16.spec
     Chapter17.spec
+    Chapter18.spec
