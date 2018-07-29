@@ -148,7 +148,7 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Quant a b) where
           ]
 
 instance (Eq a, Eq b) => EqProp (Quant a b) where
-  q =-= q' = eq q q'
+  (=-=) = eq
 
 instance Functor (Quant a) where
   fmap _ Finance = Finance
@@ -163,7 +163,7 @@ instance Arbitrary a => Arbitrary (K a b) where
     return $ K a
 
 instance Eq a => EqProp (K a b) where
-  k =-= k' = eq k k'
+  (=-=) = eq
 
 instance Functor (K a) where
   fmap _ (K a) = K a
@@ -178,7 +178,7 @@ instance Arbitrary b => Arbitrary (Flip K a b) where
     return $ Flip (K b)
 
 instance (Eq b, Eq (K a b)) => EqProp (Flip K a b) where
-  k =-= k' = eq k k'
+  (=-=) = eq
 
 instance Functor (Flip K a) where
   fmap f (Flip (K b)) = Flip (K (f b))
@@ -193,7 +193,7 @@ instance Arbitrary b => Arbitrary (EvilGoateeConst a b) where
     return $ GoatyConst b
 
 instance Eq b => EqProp (EvilGoateeConst a b) where
-  e =-= e' = eq e e'
+  (=-=) = eq
 
 instance Functor (EvilGoateeConst a) where
   fmap f (GoatyConst b) = GoatyConst $ f b
@@ -208,7 +208,7 @@ instance Arbitrary (f a) => Arbitrary (LiftItOut f a) where
     return $ LiftItOut fa
 
 instance Eq (f a) => EqProp (LiftItOut f a) where
-  l =-= l' = eq l l'
+  (=-=) = eq
 
 instance Functor f => Functor (LiftItOut f) where
   fmap f (LiftItOut fa) = LiftItOut $ f <$> fa
@@ -224,7 +224,7 @@ instance (Arbitrary (f a), Arbitrary (g a)) => Arbitrary (Parappa f g a) where
     return $ DaWrappa fa ga
 
 instance (Eq (f a), Eq (g a)) => EqProp (Parappa f g a) where
-  p =-= p' = eq p p'
+  (=-=) = eq
 
 instance (Functor f, Functor g) => Functor (Parappa f g) where
   fmap f (DaWrappa fa ga) = DaWrappa (f <$> fa) (f <$> ga)
@@ -240,7 +240,7 @@ instance (Arbitrary (f a), Arbitrary (g b)) => Arbitrary (IgnoreOne f g a b) whe
     return $ IgnoringSometing fa gb
 
 instance (Eq (f a), Eq (g b)) => EqProp (IgnoreOne f g a b) where
-  i =-= i' = eq i i'
+  (=-=) = eq
 
 instance (Functor g) => Functor (IgnoreOne f g a) where
   fmap f (IgnoringSometing fa gb) = IgnoringSometing fa (f <$> gb)
@@ -257,7 +257,7 @@ instance (Arbitrary (g o), Arbitrary (g a), Arbitrary (g t)) => Arbitrary (Notor
     return $ Notorious go ga gt
 
 instance (Eq (g o), Eq (g a), Eq (g t)) => EqProp (Notorious g o a t) where
-  g =-= g' = eq g g'
+  (=-=) = eq
 
 instance (Functor g) => Functor (Notorious g o a) where
   fmap f (Notorious go ga gt) = Notorious go ga (f <$> gt)
@@ -277,7 +277,7 @@ instance Arbitrary a => Arbitrary (List a) where
     return $ fromBaseList as
 
 instance Eq a => EqProp (List a) where
-  l =-= l' = eq l l'
+  (=-=) = eq
 
 instance Functor List where
   fmap _ Nil = Nil
@@ -303,7 +303,7 @@ instance Arbitrary a => Arbitrary (GoatLord a) where
               ]
 
 instance Eq a => EqProp (GoatLord a) where
-  g =-= g' = eq g g'
+  (=-=) = eq
 
 instance Functor GoatLord where
   fmap _ NoGoat = NoGoat
