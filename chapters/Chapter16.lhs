@@ -23,7 +23,9 @@ functorIdentity f = fmap id f == f
 functorCompose :: (Eq (f c), Functor f) => f a -> Fun a b -> Fun b c -> Bool
 functorCompose x (Fun _ f) (Fun _ g) = fmap (g . f) x == (fmap g . fmap f $ x)
 
-newtype Identity a = Identity a deriving (Eq, Show)
+newtype Identity a =
+  Identity a
+  deriving (Eq, Show)
 
 instance Arbitrary a => Arbitrary (Identity a) where
   arbitrary = Identity <$> arbitrary
@@ -31,7 +33,10 @@ instance Arbitrary a => Arbitrary (Identity a) where
 instance Functor Identity where
   fmap f (Identity a) = Identity $ f a
 
-data Pair a = Pair a a deriving (Eq, Show)
+data Pair a =
+  Pair a
+       a
+  deriving (Eq, Show)
 
 instance Arbitrary a => Arbitrary (Pair a) where
   arbitrary = do
@@ -42,7 +47,10 @@ instance Arbitrary a => Arbitrary (Pair a) where
 instance Functor Pair where
   fmap f (Pair a a') = Pair (f a) (f a')
 
-data Two a b = Two a b deriving (Eq, Show)
+data Two a b =
+  Two a
+      b
+  deriving (Eq, Show)
 
 instance (Arbitrary a, Arbitrary b) => Arbitrary (Two a b) where
   arbitrary = do
@@ -53,9 +61,14 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Two a b) where
 instance Functor (Two a) where
   fmap f (Two a b) = Two a (f b)
 
-data Three a b c = Three a b c deriving (Eq, Show)
+data Three a b c =
+  Three a
+        b
+        c
+  deriving (Eq, Show)
 
-instance (Arbitrary a, Arbitrary b, Arbitrary c) => Arbitrary (Three a b c) where
+instance (Arbitrary a, Arbitrary b, Arbitrary c) =>
+         Arbitrary (Three a b c) where
   arbitrary = do
     a <- arbitrary
     b <- arbitrary
@@ -65,7 +78,11 @@ instance (Arbitrary a, Arbitrary b, Arbitrary c) => Arbitrary (Three a b c) wher
 instance Functor (Three a b) where
   fmap f (Three a b c) = Three a b (f c)
 
-data Three' a b = Three' a b b deriving (Eq, Show)
+data Three' a b =
+  Three' a
+         b
+         b
+  deriving (Eq, Show)
 
 instance (Arbitrary a, Arbitrary b) => Arbitrary (Three' a b) where
   arbitrary = do
@@ -77,9 +94,15 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Three' a b) where
 instance Functor (Three' a) where
   fmap f (Three' a b b') = Three' a (f b) (f b')
 
-data Four a b c d = Four a b c d deriving (Eq, Show)
+data Four a b c d =
+  Four a
+       b
+       c
+       d
+  deriving (Eq, Show)
 
-instance (Arbitrary a, Arbitrary b, Arbitrary c, Arbitrary d) => Arbitrary (Four a b c d) where
+instance (Arbitrary a, Arbitrary b, Arbitrary c, Arbitrary d) =>
+         Arbitrary (Four a b c d) where
   arbitrary = do
     a <- arbitrary
     b <- arbitrary
@@ -90,7 +113,12 @@ instance (Arbitrary a, Arbitrary b, Arbitrary c, Arbitrary d) => Arbitrary (Four
 instance Functor (Four a b c) where
   fmap f (Four a b c d) = Four a b c (f d)
 
-data Four' a b = Four' a a a b deriving (Eq, Show)
+data Four' a b =
+  Four' a
+        a
+        a
+        b
+  deriving (Eq, Show)
 
 instance (Arbitrary a, Arbitrary b) => Arbitrary (Four' a b) where
   arbitrary = do
@@ -103,22 +131,22 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Four' a b) where
 instance Functor (Four' a) where
   fmap f (Four' a a' a'' b) = Four' a a' a'' (f b)
 
-data Possibly a =
-    LolNope
+data Possibly a
+  = LolNope
   | Yeppers a
   deriving (Eq, Show)
 
 instance Arbitrary a => Arbitrary (Possibly a) where
   arbitrary = do
     a <- arbitrary
-    oneof [ return LolNope, return $ Yeppers a ]
+    oneof [return LolNope, return $ Yeppers a]
 
 instance Functor Possibly where
   fmap _ LolNope = LolNope
   fmap f (Yeppers a) = Yeppers $ f a
 
-data Sum a b =
-    First a
+data Sum a b
+  = First a
   | Second b
   deriving (Eq, Show)
 
@@ -126,14 +154,14 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Sum a b) where
   arbitrary = do
     a <- arbitrary
     b <- arbitrary
-    oneof [ return $ First a, return $ Second b ]
+    oneof [return $ First a, return $ Second b]
 
 instance Functor (Sum a) where
   fmap _ (First a) = First a
   fmap f (Second b) = Second $ f b
 
-data Quant a b =
-    Finance
+data Quant a b
+  = Finance
   | Desk a
   | Bloor b
   deriving (Eq, Show)
@@ -142,10 +170,7 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Quant a b) where
   arbitrary = do
     a <- arbitrary
     b <- arbitrary
-    oneof [ return Finance
-          , return $ Desk a
-          , return $ Bloor b
-          ]
+    oneof [return Finance, return $ Desk a, return $ Bloor b]
 
 instance (Eq a, Eq b) => EqProp (Quant a b) where
   (=-=) = eq
@@ -155,7 +180,9 @@ instance Functor (Quant a) where
   fmap _ (Desk a) = Desk a
   fmap f (Bloor b) = Bloor $ f b
 
-data K a b = K a deriving (Eq, Show)
+data K a b =
+  K a
+  deriving (Eq, Show)
 
 instance Arbitrary a => Arbitrary (K a b) where
   arbitrary = do
@@ -214,7 +241,8 @@ instance Functor f => Functor (LiftItOut f) where
   fmap f (LiftItOut fa) = LiftItOut $ f <$> fa
 
 data Parappa f g a =
-  DaWrappa (f a) (g a)
+  DaWrappa (f a)
+           (g a)
   deriving (Eq, Show)
 
 instance (Arbitrary (f a), Arbitrary (g a)) => Arbitrary (Parappa f g a) where
@@ -230,10 +258,12 @@ instance (Functor f, Functor g) => Functor (Parappa f g) where
   fmap f (DaWrappa fa ga) = DaWrappa (f <$> fa) (f <$> ga)
 
 data IgnoreOne f g a b =
-  IgnoringSometing (f a) (g b)
+  IgnoringSometing (f a)
+                   (g b)
   deriving (Eq, Show)
 
-instance (Arbitrary (f a), Arbitrary (g b)) => Arbitrary (IgnoreOne f g a b) where
+instance (Arbitrary (f a), Arbitrary (g b)) =>
+         Arbitrary (IgnoreOne f g a b) where
   arbitrary = do
     fa <- arbitrary
     gb <- arbitrary
@@ -246,10 +276,13 @@ instance (Functor g) => Functor (IgnoreOne f g a) where
   fmap f (IgnoringSometing fa gb) = IgnoringSometing fa (f <$> gb)
 
 data Notorious g o a t =
-  Notorious (g o) (g a) (g t)
+  Notorious (g o)
+            (g a)
+            (g t)
   deriving (Eq, Show)
 
-instance (Arbitrary (g o), Arbitrary (g a), Arbitrary (g t)) => Arbitrary (Notorious g o a t) where
+instance (Arbitrary (g o), Arbitrary (g a), Arbitrary (g t)) =>
+         Arbitrary (Notorious g o a t) where
   arbitrary = do
     go <- arbitrary
     ga <- arbitrary
@@ -262,9 +295,10 @@ instance (Eq (g o), Eq (g a), Eq (g t)) => EqProp (Notorious g o a t) where
 instance (Functor g) => Functor (Notorious g o a) where
   fmap f (Notorious go ga gt) = Notorious go ga (f <$> gt)
 
-data List a =
-    Nil
-  | Cons a (List a)
+data List a
+  = Nil
+  | Cons a
+         (List a)
   deriving (Eq, Show)
 
 fromBaseList :: [a] -> List a
@@ -283,8 +317,8 @@ instance Functor List where
   fmap _ Nil = Nil
   fmap f (Cons a as) = Cons (f a) (fmap f as)
 
-data GoatLord a =
-    NoGoat
+data GoatLord a
+  = NoGoat
   | OneGoat a
   | MoreGoats (GoatLord a)
               (GoatLord a)
@@ -297,10 +331,11 @@ instance Arbitrary a => Arbitrary (GoatLord a) where
     goatLord1 <- arbitrary
     goatLord2 <- arbitrary
     goatLord3 <- arbitrary
-    frequency [ (5, return NoGoat)
-              , (5, return $ OneGoat a)
-              , (1, return $ MoreGoats goatLord1 goatLord2 goatLord3)
-              ]
+    frequency
+      [ (5, return NoGoat)
+      , (5, return $ OneGoat a)
+      , (1, return $ MoreGoats goatLord1 goatLord2 goatLord3)
+      ]
 
 instance Eq a => EqProp (GoatLord a) where
   (=-=) = eq
@@ -310,9 +345,10 @@ instance Functor GoatLord where
   fmap f (OneGoat a) = OneGoat $ f a
   fmap f (MoreGoats gl1 gl2 gl3) = MoreGoats (f <$> gl1) (f <$> gl2) (f <$> gl3)
 
-data TalkToMe a =
-    Halt
-  | Print String a
+data TalkToMe a
+  = Halt
+  | Print String
+          a
   | Read (String -> a)
 
 instance Show a => Show (TalkToMe a) where
@@ -336,89 +372,76 @@ spec = do
     it "functor obeys identity" $
       property (functorIdentity :: Identity Int -> Bool)
     it "functor obeys composition" $
-      property (functorCompose :: Identity Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
-
+      property
+        (functorCompose :: Identity Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
   describe "Pair" $ do
-    it "functor obeys identity" $
-      property (functorIdentity :: Pair Int -> Bool)
+    it "functor obeys identity" $ property (functorIdentity :: Pair Int -> Bool)
     it "functor obeys composition" $
-      property (functorCompose :: Pair Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
-
+      property
+        (functorCompose :: Pair Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
   describe "Two" $ do
     it "functor obeys identity" $
       property (functorIdentity :: Two String Int -> Bool)
     it "functor obeys composition" $
-      property (functorCompose :: Two String Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
-
+      property
+        (functorCompose :: Two String Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
   describe "Three" $ do
     it "functor obeys identity" $
       property (functorIdentity :: Three String String Int -> Bool)
     it "functor obeys composition" $
-      property (functorCompose :: Three String String Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
-
+      property
+        (functorCompose :: Three String String Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
   describe "Three'" $ do
     it "functor obeys identity" $
       property (functorIdentity :: Three' String Int -> Bool)
     it "functor obeys composition" $
-      property (functorCompose :: Three' String Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
-
+      property
+        (functorCompose :: Three' String Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
   describe "Four" $ do
     it "functor obeys identity" $
       property (functorIdentity :: Four String String String Int -> Bool)
     it "functor obeys composition" $
-      property (functorCompose :: Four String String String Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
-
+      property
+        (functorCompose :: Four String String String Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
   describe "Four'" $ do
     it "functor obeys identity" $
       property (functorIdentity :: Four' String Int -> Bool)
     it "functor obeys composition" $
-      property (functorCompose :: Four' String Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
-
+      property
+        (functorCompose :: Four' String Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
   describe "Possibly" $ do
     it "functor obeys identity" $
       property (functorIdentity :: Possibly Int -> Bool)
     it "functor obeys composition" $
-      property (functorCompose :: Possibly Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
-
+      property
+        (functorCompose :: Possibly Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
   describe "Sum" $ do
     it "functor obeys identity" $
       property (functorIdentity :: Sum String Int -> Bool)
     it "functor obeys composition" $
-      property (functorCompose :: Sum String Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
-
+      property
+        (functorCompose :: Sum String Int -> (Fun Int Int) -> (Fun Int Int) -> Bool)
   describe "Quant" $ do
     testBatch $ functor (undefined :: Quant String (Int, Int, Int))
-
-  describe "K" $ do
-    testBatch $ functor (undefined :: K String (Int, Int, Int))
-
+  describe "K" $ do testBatch $ functor (undefined :: K String (Int, Int, Int))
   describe "Flip K" $ do
     testBatch $ functor (undefined :: Flip K String (Int, Int, Int))
-
   describe "EvilGoateeConst" $ do
     testBatch $ functor (undefined :: EvilGoateeConst String (Int, Int, Int))
-
   describe "LiftItOut" $ do
     testBatch $ functor (undefined :: LiftItOut Maybe (Int, Int, Int))
-
   describe "Parappa" $ do
     testBatch $ functor (undefined :: Parappa [] Maybe (Int, Int, Int))
-
   describe "IgnoreOne" $ do
     testBatch $ functor (undefined :: IgnoreOne [] Maybe String (Int, Int, Int))
-
   describe "Notorious" $ do
-    testBatch $ functor (undefined :: Notorious [] String String (Int, Int, Int))
-
-  describe "List" $ do
-    testBatch $ functor (undefined :: List (Int, Int, Int))
-
+    testBatch $
+      functor (undefined :: Notorious [] String String (Int, Int, Int))
+  describe "List" $ do testBatch $ functor (undefined :: List (Int, Int, Int))
   describe "GoatLord" $ do
     testBatch $ functor (undefined :: GoatLord (Int, Int, Int))
-
   describe "TalkToMe" $ do
-    it "fmap for Halt" $
-      (+ 1) <$> Halt `shouldBe` (Halt :: TalkToMe Int)
+    it "fmap for Halt" $ (+ 1) <$> Halt `shouldBe` (Halt :: TalkToMe Int)
     it "fmap for Print" $
       (+ 1) <$> (Print "str" 1) `shouldBe` (Print "str" 2 :: TalkToMe Int)
     it "fmap for Read" $

@@ -5,7 +5,6 @@ title: Chapter 18
 ---
 
 \begin{code}
-
 module Chapter18 where
 
 import Control.Monad (ap, join)
@@ -18,8 +17,8 @@ import Test.QuickCheck.Classes hiding (bind)
 bind :: Monad m => (a -> m b) -> m a -> m b
 bind f = join . fmap f
 
-data Sum a b =
-    First a
+data Sum a b
+  = First a
   | Second b
   deriving (Eq, Show)
 
@@ -27,9 +26,7 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (Sum a b) where
   arbitrary = do
     a <- arbitrary
     b <- arbitrary
-    oneof [ return $ First a
-          , return $ Second b
-          ]
+    oneof [return $ First a, return $ Second b]
 
 instance (Eq a, Eq b) => EqProp (Sum a b) where
   (=-=) = eq
@@ -70,8 +67,8 @@ instance Monad Nope where
   return = pure
   NopeDotJpg >>= _ = NopeDotJpg
 
-data PhhhbbbtttEither b a =
-    PLeft a
+data PhhhbbbtttEither b a
+  = PLeft a
   | PRight b
   deriving (Eq, Show)
 
@@ -79,9 +76,7 @@ instance (Arbitrary a, Arbitrary b) => Arbitrary (PhhhbbbtttEither b a) where
   arbitrary = do
     a <- arbitrary
     b <- arbitrary
-    oneof [ return $ PLeft a
-          , return $ PRight b
-          ]
+    oneof [return $ PLeft a, return $ PRight b]
 
 instance (Eq a, Eq b) => EqProp (PhhhbbbtttEither a b) where
   (=-=) = eq
@@ -122,9 +117,10 @@ instance Monad Identity where
   return = pure
   Identity a >>= f = f a
 
-data List a =
-    Nil
-  | Cons a (List a)
+data List a
+  = Nil
+  | Cons a
+         (List a)
   deriving (Eq, Show)
 
 toMyList :: [a] -> List a
@@ -187,42 +183,33 @@ spec = do
   describe "bind" $ do
     it "maps and then concats a list" $
       bind (\n -> replicate n n) [1, 2, 3] `shouldBe` [1, 2, 2, 3, 3, 3]
-
   describe "Sum" $ do
     testBatch $ monad (undefined :: Sum String (Int, Int, Int))
-
-  describe "Nope" $ do
-    testBatch $ monad (undefined :: Nope (Int, Int, Int))
-
+  describe "Nope" $ do testBatch $ monad (undefined :: Nope (Int, Int, Int))
   describe "PhhhbbbtttEither" $ do
     testBatch $ monad (undefined :: PhhhbbbtttEither String (Int, Int, Int))
-
   describe "Identity" $ do
     testBatch $ monad (undefined :: Identity (Int, Int, Int))
-
-  describe "List" $ do
-    testBatch $ monad (undefined :: List (Int, Int, Int))
-
+  describe "List" $ do testBatch $ monad (undefined :: List (Int, Int, Int))
   describe "j" $ do
     it "concats lists" $ j [[1, 2], [], [3]] `shouldBe` [1, 2, 3]
     it "joins two Justs" $ j (Just (Just 1)) `shouldBe` Just 1
-    it "joins a Just Nothing" $ j (Just Nothing) `shouldBe` (Nothing :: Maybe Int)
+    it "joins a Just Nothing" $
+      j (Just Nothing) `shouldBe` (Nothing :: Maybe Int)
     it "joins a Nothing" $ j Nothing `shouldBe` (Nothing :: Maybe Int)
-
-  describe "l1" $ do
-    it "lifts" $ l1 (+ 1) [1, 2, 3] `shouldBe` [2, 3, 4]
-
+  describe "l1" $ do it "lifts" $ l1 (+ 1) [1, 2, 3] `shouldBe` [2, 3, 4]
   describe "l2" $ do
-    it "lifts more" $ l2 (+) [1, 2, 3] [4, 5, 6] `shouldBe` [5, 6, 7, 6, 7, 8, 7, 8, 9]
-
-  describe "a" $ do
-    it "applies" $ a [1, 2, 3] [(+ 1)] `shouldBe` [2, 3, 4]
-
+    it "lifts more" $
+      l2 (+) [1, 2, 3] [4, 5, 6] `shouldBe` [5, 6, 7, 6, 7, 8, 7, 8, 9]
+  describe "a" $ do it "applies" $ a [1, 2, 3] [(+ 1)] `shouldBe` [2, 3, 4]
   describe "meh" $ do
-    it "transforms list to list of lists" $ meh  [1, 2] (\n -> replicate n n) `shouldBe` [[1, 2], [1, 2]]
-    it "transforms list to Maybe of list" $ meh  [1, 2] (\n -> Just n) `shouldBe` Just [1, 2]
-
+    it "transforms list to list of lists" $
+      meh [1, 2] (\n -> replicate n n) `shouldBe` [[1, 2], [1, 2]]
+    it "transforms list to Maybe of list" $
+      meh [1, 2] (\n -> Just n) `shouldBe` Just [1, 2]
   describe "flipType" $ do
-    it "transforms a list of Justs to a Just of a list" $ flipType [Just 1, Just 2] `shouldBe` Just [1, 2]
-    it "transforms a list with a Nothing to a Nothing" $ flipType [Just 1, Nothing] `shouldBe` Nothing
+    it "transforms a list of Justs to a Just of a list" $
+      flipType [Just 1, Just 2] `shouldBe` Just [1, 2]
+    it "transforms a list with a Nothing to a Nothing" $
+      flipType [Just 1, Nothing] `shouldBe` Nothing
 \end{code}

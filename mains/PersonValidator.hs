@@ -10,8 +10,7 @@ main = do
   case mkPerson name age of
     Left err -> do
       putStrLn $ "Error: " ++ show err
-    Right person ->
-      putStrLn $ "Yay! Successfully got a person: " ++ show person
+    Right person -> putStrLn $ "Yay! Successfully got a person: " ++ show person
 
 type Name = String
 

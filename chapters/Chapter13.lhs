@@ -9,8 +9,8 @@ module Chapter13 where
 
 import Control.Monad (forever)
 import Data.Char (toLower)
-import Data.Maybe (isJust)
 import Data.List (intersperse)
+import Data.Maybe (isJust)
 import System.Exit (exitSuccess)
 import System.IO (BufferMode(NoBuffering), hSetBuffering, stdout)
 import System.Random (randomRIO)
@@ -35,9 +35,10 @@ gameWords :: IO WordList
 gameWords = do
   (Wordlist aw) <- allWords
   return . Wordlist $ (filter gameLength aw)
-  where gameLength w =
-          let l = length w
-          in  l >= minWordLength && l < maxWordLength
+  where
+    gameLength w =
+      let l = length w
+       in l >= minWordLength && l < maxWordLength
 
 randomWord :: WordList -> IO String
 randomWord (Wordlist wl) = do
@@ -48,13 +49,15 @@ randomWord' :: IO String
 randomWord' = gameWords >>= randomWord
 
 data Puzzle =
-  Puzzle String [Maybe Char] [Char]
+  Puzzle String
+         [Maybe Char]
+         [Char]
   deriving (Eq)
 
 instance Show Puzzle where
   show (Puzzle _ discovered guessed) =
-    (intersperse ' ' $ fmap renderPuzzleChar discovered)
-      ++ " Guessed so far: " ++ guessed
+    (intersperse ' ' $ fmap renderPuzzleChar discovered) ++
+    " Guessed so far: " ++ guessed
 
 renderPuzzleChar :: Maybe Char -> Char
 renderPuzzleChar Nothing = '_'
@@ -75,8 +78,8 @@ fillInCharacter (Puzzle word filledInSoFar s) c =
   where
     zipper guessed wordChar guessChar =
       if wordChar == guessed
-      then Just wordChar
-      else guessChar
+        then Just wordChar
+        else guessChar
     newFilledInSoFar = zipWith (zipper c) word filledInSoFar
 
 handleGuess :: Puzzle -> Char -> IO Puzzle
@@ -103,29 +106,32 @@ isGameOver (Puzzle wordToGuess _ guessed) =
 
 gameOver :: Puzzle -> IO ()
 gameOver puzzle@(Puzzle wordToGuess _ guessed) =
-  if isGameOver puzzle then
-    do putStrLn "You lose!"
-       putStrLn $ "The word was: " ++ wordToGuess
-       exitSuccess
-  else return ()
+  if isGameOver puzzle
+    then do
+      putStrLn "You lose!"
+      putStrLn $ "The word was: " ++ wordToGuess
+      exitSuccess
+    else return ()
 
 gameWin :: Puzzle -> IO ()
 gameWin (Puzzle _ filledInSoFar _) =
-  if all isJust filledInSoFar then
-    do putStrLn "You win!"
-       exitSuccess
-  else return ()
+  if all isJust filledInSoFar
+    then do
+      putStrLn "You win!"
+      exitSuccess
+    else return ()
 
 runGame :: Puzzle -> IO ()
-runGame puzzle = forever $ do
-  gameOver puzzle
-  gameWin puzzle
-  putStrLn $ "Current puzzle is: " ++ show puzzle
-  putStr "Guess a letter: "
-  guess <- getLine
-  case guess of
-    [c] -> handleGuess puzzle c >>= runGame
-    _   -> putStrLn "Your guess must be a single character"
+runGame puzzle =
+  forever $ do
+    gameOver puzzle
+    gameWin puzzle
+    putStrLn $ "Current puzzle is: " ++ show puzzle
+    putStr "Guess a letter: "
+    guess <- getLine
+    case guess of
+      [c] -> handleGuess puzzle c >>= runGame
+      _ -> putStrLn "Your guess must be a single character"
 
 main' :: IO ()
 main' = do
@@ -138,20 +144,16 @@ spec :: SpecWith ()
 spec = do
   describe "freshPuzzle" $ do
     it "for hello" $
-      freshPuzzle "hello" `shouldBe` Puzzle "hello" [Nothing, Nothing, Nothing, Nothing, Nothing] []
-
+      freshPuzzle "hello" `shouldBe`
+      Puzzle "hello" [Nothing, Nothing, Nothing, Nothing, Nothing] []
   describe "charInWord" $ do
-    it "for found" $
-      charInWord (freshPuzzle "hello") 'h' `shouldBe` True
-    it "for not found" $
-      charInWord (freshPuzzle "hello") 'z' `shouldBe` False
-
+    it "for found" $ charInWord (freshPuzzle "hello") 'h' `shouldBe` True
+    it "for not found" $ charInWord (freshPuzzle "hello") 'z' `shouldBe` False
   describe "alreadyGuessed" $ do
     it "for found" $
       alreadyGuessed (Puzzle "h" [Nothing] ['z']) 'z' `shouldBe` True
     it "for not found" $
       alreadyGuessed (Puzzle "h" [Nothing] []) 'h' `shouldBe` False
-
   describe "isGameOver" $ do
     it "for less than 7 guesses" $
       isGameOver (Puzzle "h" [Nothing] "abcdef") `shouldBe` False
@@ -159,16 +161,14 @@ spec = do
       isGameOver (Puzzle "h" [Nothing] "abcdefg") `shouldBe` True
     it "for 6 incorrect guesses and a correct guess" $
       isGameOver (Puzzle "hz" [Just 'h', Nothing] "abcdefh") `shouldBe` False
-
   describe "renderPuzzleChar" $ do
-    it "for Nothing" $
-      renderPuzzleChar Nothing `shouldBe` '_'
-    it "for a letter" $
-      renderPuzzleChar (Just 'h') `shouldBe` 'h'
-
+    it "for Nothing" $ renderPuzzleChar Nothing `shouldBe` '_'
+    it "for a letter" $ renderPuzzleChar (Just 'h') `shouldBe` 'h'
   describe "fillInCharacter" $ do
     it "for not found" $
-      fillInCharacter (Puzzle "hi" [Nothing, Nothing] "") 'z' `shouldBe` (Puzzle "hi" [Nothing, Nothing] "z")
+      fillInCharacter (Puzzle "hi" [Nothing, Nothing] "") 'z' `shouldBe`
+      (Puzzle "hi" [Nothing, Nothing] "z")
     it "for found" $
-      fillInCharacter (Puzzle "hi" [Nothing, Nothing] "") 'h' `shouldBe` (Puzzle "hi" [Just 'h', Nothing] "h")
+      fillInCharacter (Puzzle "hi" [Nothing, Nothing] "") 'h' `shouldBe`
+      (Puzzle "hi" [Just 'h', Nothing] "h")
 \end{code}

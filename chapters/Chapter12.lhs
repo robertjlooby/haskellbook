@@ -49,8 +49,8 @@ mkWord s
   | countVowels s <= countConsonants s = Just $ Word' s
   | otherwise = Nothing
 
-data Nat =
-    Zero
+data Nat
+  = Zero
   | Succ Nat
   deriving (Eq, Show)
 
@@ -92,32 +92,32 @@ catMaybes :: [Maybe a] -> [a]
 catMaybes = foldr catIfJust []
   where
     catIfJust Nothing acc = acc
-    catIfJust (Just a) acc = a:acc
+    catIfJust (Just a) acc = a : acc
 
 flipMaybe :: [Maybe a] -> Maybe [a]
 flipMaybe = foldr flipIfJust (Just [])
   where
     flipIfJust Nothing _ = Nothing
     flipIfJust _ Nothing = Nothing
-    flipIfJust (Just a) (Just acc) = Just (a:acc)
+    flipIfJust (Just a) (Just acc) = Just (a : acc)
 
 lefts' :: [Either a b] -> [a]
 lefts' = foldr catIfLeft []
   where
-    catIfLeft (Left a) acc = a:acc
+    catIfLeft (Left a) acc = a : acc
     catIfLeft _ acc = acc
 
 rights' :: [Either a b] -> [b]
 rights' = foldr catIfRight []
   where
-    catIfRight (Right b) acc = b:acc
+    catIfRight (Right b) acc = b : acc
     catIfRight _ acc = acc
 
 partitionEithers' :: [Either a b] -> ([a], [b])
 partitionEithers' = foldr catEither ([], [])
   where
-    catEither (Left a) (as, bs) = (a:as, bs)
-    catEither (Right b) (as, bs) = (as, b:bs)
+    catEither (Left a) (as, bs) = (a : as, bs)
+    catEither (Right b) (as, bs) = (as, b : bs)
 
 either' :: (a -> c) -> (b -> c) -> Either a b -> c
 either' f _ (Left a) = f a
@@ -139,9 +139,11 @@ myUnfoldr f b =
 betterIterate :: (a -> a) -> a -> [a]
 betterIterate f = myUnfoldr (\x -> Just (x, f x))
 
-data BinaryTree a =
-    Leaf
-  | Node (BinaryTree a) a (BinaryTree a)
+data BinaryTree a
+  = Leaf
+  | Node (BinaryTree a)
+         a
+         (BinaryTree a)
   deriving (Eq, Ord, Show)
 
 unfoldBT :: (a -> Maybe (a, b, a)) -> a -> BinaryTree b
@@ -162,146 +164,88 @@ spec = do
   describe "replaceThe" $ do
     it "for first word" $
       replaceThe "the cow loves us" `shouldBe` "a cow loves us"
-    it "for last word" $
-      replaceThe "cow loves the" `shouldBe` "cow loves a"
+    it "for last word" $ replaceThe "cow loves the" `shouldBe` "cow loves a"
     it "for middle word" $
       replaceThe "cow the loves us" `shouldBe` "cow a loves us"
-
   describe "countTheBeforeVowel" $ do
-    it "with none" $
-      countTheBeforeVowel "the cow, the dog" `shouldBe` 0
+    it "with none" $ countTheBeforeVowel "the cow, the dog" `shouldBe` 0
     it "with all" $
       countTheBeforeVowel "the evil cow, the awesome dog" `shouldBe` 2
-    it "with some" $
-      countTheBeforeVowel "the evil cow, the dog" `shouldBe` 1
+    it "with some" $ countTheBeforeVowel "the evil cow, the dog" `shouldBe` 1
     it "with repeat thes" $
       countTheBeforeVowel "the the evil cow, the dog" `shouldBe` 1
-
   describe "countVowels" $ do
-    it "with none" $
-      countVowels "th cw, th dg" `shouldBe` 0
-    it "with some" $
-      countVowels "the cow, the dog" `shouldBe` 4
-
+    it "with none" $ countVowels "th cw, th dg" `shouldBe` 0
+    it "with some" $ countVowels "the cow, the dog" `shouldBe` 4
   describe "mkWord" $ do
-    it "the is a word" $
-      mkWord "the" `shouldBe` Just (Word' "the")
-    it "at is a word" $
-      mkWord "at" `shouldBe` Just (Word' "at")
-    it "that is a word" $
-      mkWord "that" `shouldBe` Just (Word' "that")
-    it "eat is not a word" $
-      mkWord "eat" `shouldBe` Nothing
-    it "a is not a word" $
-      mkWord "a" `shouldBe` Nothing
-
+    it "the is a word" $ mkWord "the" `shouldBe` Just (Word' "the")
+    it "at is a word" $ mkWord "at" `shouldBe` Just (Word' "at")
+    it "that is a word" $ mkWord "that" `shouldBe` Just (Word' "that")
+    it "eat is not a word" $ mkWord "eat" `shouldBe` Nothing
+    it "a is not a word" $ mkWord "a" `shouldBe` Nothing
   describe "natToInteger" $ do
-    it "for Zero" $
-      natToInteger Zero `shouldBe` 0
-    it "for 1" $
-      natToInteger (Succ Zero) `shouldBe` 1
-    it "for 2" $
-      natToInteger (Succ (Succ Zero)) `shouldBe` 2
-
+    it "for Zero" $ natToInteger Zero `shouldBe` 0
+    it "for 1" $ natToInteger (Succ Zero) `shouldBe` 1
+    it "for 2" $ natToInteger (Succ (Succ Zero)) `shouldBe` 2
   describe "integerToNat" $ do
-    it "for 0" $
-      integerToNat 0 `shouldBe` Just Zero
-    it "for 1" $
-      integerToNat 1 `shouldBe` Just (Succ Zero)
-    it "for 2" $
-      integerToNat 2 `shouldBe` Just (Succ (Succ Zero))
-    it "for -1" $
-      integerToNat (-1) `shouldBe` Nothing
-
+    it "for 0" $ integerToNat 0 `shouldBe` Just Zero
+    it "for 1" $ integerToNat 1 `shouldBe` Just (Succ Zero)
+    it "for 2" $ integerToNat 2 `shouldBe` Just (Succ (Succ Zero))
+    it "for -1" $ integerToNat (-1) `shouldBe` Nothing
   describe "isJust" $ do
-    it "for Nothing" $
-      isJust Nothing `shouldBe` False
-    it "for Just" $
-      isJust (Just "hi") `shouldBe` True
-
+    it "for Nothing" $ isJust Nothing `shouldBe` False
+    it "for Just" $ isJust (Just "hi") `shouldBe` True
   describe "isNothing" $ do
-    it "for Nothing" $
-      isNothing Nothing `shouldBe` True
-    it "for Just" $
-      isNothing (Just "hi") `shouldBe` False
-
+    it "for Nothing" $ isNothing Nothing `shouldBe` True
+    it "for Just" $ isNothing (Just "hi") `shouldBe` False
   describe "mayybee" $ do
-    it "for Nothing" $
-      mayybee 0 (+ 1) Nothing `shouldBe` 0
-    it "for Just" $
-      mayybee 0 (+ 1) (Just 1) `shouldBe` 2
-
+    it "for Nothing" $ mayybee 0 (+ 1) Nothing `shouldBe` 0
+    it "for Just" $ mayybee 0 (+ 1) (Just 1) `shouldBe` 2
   describe "fromMaybe" $ do
-    it "for Nothing" $
-      fromMaybe 0 Nothing `shouldBe` 0
-    it "for Just" $
-      fromMaybe 0 (Just 1) `shouldBe` 1
-
+    it "for Nothing" $ fromMaybe 0 Nothing `shouldBe` 0
+    it "for Just" $ fromMaybe 0 (Just 1) `shouldBe` 1
   describe "listToMaybe" $ do
-    it "for Nothing" $
-      listToMaybe [] `shouldBe` (Nothing :: Maybe Int)
-    it "for Just" $
-      listToMaybe [1, 2, 3] `shouldBe` Just 1
-
+    it "for Nothing" $ listToMaybe [] `shouldBe` (Nothing :: Maybe Int)
+    it "for Just" $ listToMaybe [1, 2, 3] `shouldBe` Just 1
   describe "maybeToList" $ do
-    it "for Nothing" $
-      maybeToList Nothing `shouldBe` ([] :: [Int])
-    it "for Just" $
-      maybeToList (Just 1) `shouldBe` [1]
-
+    it "for Nothing" $ maybeToList Nothing `shouldBe` ([] :: [Int])
+    it "for Just" $ maybeToList (Just 1) `shouldBe` [1]
   describe "catMaybes" $ do
-    it "for Nothing" $
-      catMaybes [Nothing, Nothing] `shouldBe` ([] :: [Int])
-    it "for Just" $
-      catMaybes [Just 1, Nothing, Just 2] `shouldBe` [1, 2]
-
+    it "for Nothing" $ catMaybes [Nothing, Nothing] `shouldBe` ([] :: [Int])
+    it "for Just" $ catMaybes [Just 1, Nothing, Just 2] `shouldBe` [1, 2]
   describe "flipMaybe" $ do
-    it "for Nothing" $
-      flipMaybe [Just 1, Nothing, Just 2] `shouldBe` Nothing
-    it "for Just" $
-      flipMaybe [Just 1, Just 2, Just 3] `shouldBe` Just [1, 2, 3]
-
+    it "for Nothing" $ flipMaybe [Just 1, Nothing, Just 2] `shouldBe` Nothing
+    it "for Just" $ flipMaybe [Just 1, Just 2, Just 3] `shouldBe` Just [1, 2, 3]
   describe "lefts'" $ do
     it "gets Lefts" $
       lefts' [Left 1, Right "hi", Left 2, Right "hello"] `shouldBe` [1, 2]
-
   describe "rights'" $ do
     it "gets Rights" $
-      rights' [Left 1, Right "hi", Left 2, Right "hello"] `shouldBe` ["hi", "hello"]
-
+      rights' [Left 1, Right "hi", Left 2, Right "hello"] `shouldBe`
+      ["hi", "hello"]
   describe "partitionEithers'" $ do
     it "groups Lefts and Rights" $
-      partitionEithers' [Left 1, Right "hi", Left 2, Right "hello"] `shouldBe` ([1, 2], ["hi", "hello"])
-
+      partitionEithers' [Left 1, Right "hi", Left 2, Right "hello"] `shouldBe`
+      ([1, 2], ["hi", "hello"])
   describe "either'" $ do
-    it "for a Left" $
-      either' (+ 1) (+ 2) (Left 10) `shouldBe` 11
-    it "for a Right" $
-      either' (+ 1) (+ 2) (Right 10) `shouldBe` 12
-
+    it "for a Left" $ either' (+ 1) (+ 2) (Left 10) `shouldBe` 11
+    it "for a Right" $ either' (+ 1) (+ 2) (Right 10) `shouldBe` 12
   describe "eitherMaybe'" $ do
-    it "for a Left" $
-      eitherMaybe' (+ 1) (Left 10) `shouldBe` Nothing
-    it "for a Right" $
-      eitherMaybe' (+ 1) (Right 10) `shouldBe` Just 11
-
+    it "for a Left" $ eitherMaybe' (+ 1) (Left 10) `shouldBe` Nothing
+    it "for a Right" $ eitherMaybe' (+ 1) (Right 10) `shouldBe` Just 11
   describe "myIterate" $ do
     it "iterates" $
-      take 10 (myIterate (+1) 0) `shouldBe` take 10 (iterate (+1) 0)
-
+      take 10 (myIterate (+ 1) 0) `shouldBe` take 10 (iterate (+ 1) 0)
   describe "myUnfoldr" $ do
     it "unfolds" $
-      take 10 (myUnfoldr (\n -> Just (n, n + 1)) 0) `shouldBe` take 10 (unfoldr (\n -> Just (n, n + 1)) 0)
-
+      take 10 (myUnfoldr (\n -> Just (n, n + 1)) 0) `shouldBe`
+      take 10 (unfoldr (\n -> Just (n, n + 1)) 0)
   describe "betterIterate" $ do
     it "iterates" $
-      take 10 (betterIterate (+1) 0) `shouldBe` take 10 (iterate (+1) 0)
-
+      take 10 (betterIterate (+ 1) 0) `shouldBe` take 10 (iterate (+ 1) 0)
   describe "treeBuild" $ do
-    it "for 0" $
-      treeBuild 0 `shouldBe` Leaf
-    it "for 1" $
-      treeBuild 1 `shouldBe` Node Leaf 0 Leaf
+    it "for 0" $ treeBuild 0 `shouldBe` Leaf
+    it "for 1" $ treeBuild 1 `shouldBe` Node Leaf 0 Leaf
     it "for 2" $
       treeBuild 2 `shouldBe` Node (Node Leaf 1 Leaf) 0 (Node Leaf 1 Leaf)
 \end{code}
