@@ -40,3 +40,7 @@ pushes it up where it's hosted on GitHub Pages at
 ### Running Chapter 14 morse code
 
 1. `stack exec morse`
+
+### Running Chapter 26 hit counter
+
+1. `stack exec hit-counter -- <prefix>`
