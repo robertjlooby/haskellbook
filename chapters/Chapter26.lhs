@@ -1,3 +1,10 @@
+---
+title: Chapter 26
+---
+
+---
+
+\begin{code}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE StandaloneDeriving #-}
@@ -293,3 +300,4 @@ spec = do
     it "sPrintAndAccum prints and accumulates" $ do
       states <- mapM (runStateT sPrintAndAccum) [1 .. 5]
       states `shouldBe` [("1", 2), ("2", 3), ("3", 4), ("4", 5), ("5", 6)]
+\end{code}
