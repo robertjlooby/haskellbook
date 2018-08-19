@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Haskell Programming - Chapter 10</title>
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+        <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../">Haskell Programming</a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Chapter 10</h1>
+
+            <hr />
+<div class="sourceCode" id="cb1"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Chapter10</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Data.Time</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">import</span> <span class="dt">Test.Hspec</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">data</span> <span class="dt">DatabaseItem</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">  <span class="fu">=</span> <span class="dt">DbString</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">  <span class="fu">|</span> <span class="dt">DbNumber</span> <span class="dt">Integer</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">  <span class="fu">|</span> <span class="dt">DbDate</span> <span class="dt">UTCTime</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">  <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Ord</span>, <span class="dt">Show</span>)</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="ot">theDatabase ::</span> [<span class="dt">DatabaseItem</span>]</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">theDatabase <span class="fu">=</span></a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">  [ <span class="dt">DbDate</span> (<span class="dt">UTCTime</span> (fromGregorian <span class="dv">1911</span> <span class="dv">5</span> <span class="dv">1</span>) (secondsToDiffTime <span class="dv">34123</span>))</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">  , <span class="dt">DbNumber</span> <span class="dv">9001</span></a>
+<a class="sourceLine" id="cb1-16" data-line-number="16">  , <span class="dt">DbString</span> <span class="st">&quot;Hello, World!&quot;</span></a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">  , <span class="dt">DbDate</span> (<span class="dt">UTCTime</span> (fromGregorian <span class="dv">1921</span> <span class="dv">5</span> <span class="dv">1</span>) (secondsToDiffTime <span class="dv">34123</span>))</a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">  , <span class="dt">DbNumber</span> <span class="dv">9003</span></a>
+<a class="sourceLine" id="cb1-19" data-line-number="19">  ]</a>
+<a class="sourceLine" id="cb1-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb1-21" data-line-number="21"><span class="ot">filterDbDate ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> [<span class="dt">UTCTime</span>]</a>
+<a class="sourceLine" id="cb1-22" data-line-number="22">filterDbDate <span class="fu">=</span> foldr go []</a>
+<a class="sourceLine" id="cb1-23" data-line-number="23">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-24" data-line-number="24">    go (<span class="dt">DbDate</span> date) dates <span class="fu">=</span> date <span class="fu">:</span> dates</a>
+<a class="sourceLine" id="cb1-25" data-line-number="25">    go _ dates <span class="fu">=</span> dates</a>
+<a class="sourceLine" id="cb1-26" data-line-number="26"></a>
+<a class="sourceLine" id="cb1-27" data-line-number="27"><span class="ot">filterDbNumber ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> [<span class="dt">Integer</span>]</a>
+<a class="sourceLine" id="cb1-28" data-line-number="28">filterDbNumber <span class="fu">=</span> foldr go []</a>
+<a class="sourceLine" id="cb1-29" data-line-number="29">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-30" data-line-number="30">    go (<span class="dt">DbNumber</span> number) numbers <span class="fu">=</span> number <span class="fu">:</span> numbers</a>
+<a class="sourceLine" id="cb1-31" data-line-number="31">    go _ numbers <span class="fu">=</span> numbers</a>
+<a class="sourceLine" id="cb1-32" data-line-number="32"></a>
+<a class="sourceLine" id="cb1-33" data-line-number="33"><span class="ot">mostRecent ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> <span class="dt">UTCTime</span></a>
+<a class="sourceLine" id="cb1-34" data-line-number="34">mostRecent <span class="fu">=</span> maximum <span class="fu">.</span> filterDbDate</a>
+<a class="sourceLine" id="cb1-35" data-line-number="35"></a>
+<a class="sourceLine" id="cb1-36" data-line-number="36"><span class="ot">sumDb ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> <span class="dt">Integer</span></a>
+<a class="sourceLine" id="cb1-37" data-line-number="37">sumDb <span class="fu">=</span> sum <span class="fu">.</span> filterDbNumber</a>
+<a class="sourceLine" id="cb1-38" data-line-number="38"></a>
+<a class="sourceLine" id="cb1-39" data-line-number="39"><span class="ot">avgDb ::</span> [<span class="dt">DatabaseItem</span>] <span class="ot">-&gt;</span> <span class="dt">Double</span></a>
+<a class="sourceLine" id="cb1-40" data-line-number="40">avgDb database <span class="fu">=</span> fromIntegral (sum numbers) <span class="fu">/</span> fromIntegral (length numbers)</a>
+<a class="sourceLine" id="cb1-41" data-line-number="41">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-42" data-line-number="42">    numbers <span class="fu">=</span> filterDbNumber database</a>
+<a class="sourceLine" id="cb1-43" data-line-number="43"></a>
+<a class="sourceLine" id="cb1-44" data-line-number="44"><span class="ot">fibs ::</span> [<span class="dt">Integer</span>]</a>
+<a class="sourceLine" id="cb1-45" data-line-number="45">fibs <span class="fu">=</span> <span class="dv">1</span> <span class="fu">:</span> scanl (<span class="fu">+</span>) <span class="dv">1</span> fibs</a>
+<a class="sourceLine" id="cb1-46" data-line-number="46"></a>
+<a class="sourceLine" id="cb1-47" data-line-number="47"><span class="ot">factorials ::</span> [<span class="dt">Integer</span>]</a>
+<a class="sourceLine" id="cb1-48" data-line-number="48">factorials <span class="fu">=</span> scanl (<span class="fu">*</span>) <span class="dv">1</span> [<span class="dv">2</span> <span class="fu">..</span>]</a>
+<a class="sourceLine" id="cb1-49" data-line-number="49"></a>
+<a class="sourceLine" id="cb1-50" data-line-number="50">stops <span class="fu">=</span> <span class="st">&quot;pbtdkg&quot;</span></a>
+<a class="sourceLine" id="cb1-51" data-line-number="51"></a>
+<a class="sourceLine" id="cb1-52" data-line-number="52">vowels <span class="fu">=</span> <span class="st">&quot;aeiou&quot;</span></a>
+<a class="sourceLine" id="cb1-53" data-line-number="53"></a>
+<a class="sourceLine" id="cb1-54" data-line-number="54"><span class="ot">seekritFunk ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Double</span></a>
+<a class="sourceLine" id="cb1-55" data-line-number="55">seekritFunk x <span class="fu">=</span> totalWordLength <span class="fu">/</span> numberOfWords</a>
+<a class="sourceLine" id="cb1-56" data-line-number="56">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-57" data-line-number="57">    totalWordLength <span class="fu">=</span> fromIntegral <span class="fu">.</span> sum <span class="fu">.</span> map length <span class="fu">.</span> words <span class="fu">$</span> x</a>
+<a class="sourceLine" id="cb1-58" data-line-number="58">    numberOfWords <span class="fu">=</span> fromIntegral <span class="fu">.</span> length <span class="fu">.</span> words <span class="fu">$</span> x</a>
+<a class="sourceLine" id="cb1-59" data-line-number="59"></a>
+<a class="sourceLine" id="cb1-60" data-line-number="60"><span class="ot">myOr ::</span> [<span class="dt">Bool</span>] <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb1-61" data-line-number="61">myOr <span class="fu">=</span> foldr (<span class="fu">||</span>) <span class="dt">False</span></a>
+<a class="sourceLine" id="cb1-62" data-line-number="62"></a>
+<a class="sourceLine" id="cb1-63" data-line-number="63"><span class="ot">myAny ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb1-64" data-line-number="64">myAny f <span class="fu">=</span> foldr ((<span class="fu">||</span>) <span class="fu">.</span> f) <span class="dt">False</span></a>
+<a class="sourceLine" id="cb1-65" data-line-number="65"></a>
+<a class="sourceLine" id="cb1-66" data-line-number="66"><span class="ot">myElem ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb1-67" data-line-number="67">myElem a <span class="fu">=</span> foldr ((<span class="fu">||</span>) <span class="fu">.</span> (<span class="fu">==</span> a)) <span class="dt">False</span></a>
+<a class="sourceLine" id="cb1-68" data-line-number="68"></a>
+<a class="sourceLine" id="cb1-69" data-line-number="69"><span class="ot">myElem2 ::</span> <span class="dt">Eq</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb1-70" data-line-number="70">myElem2 <span class="fu">=</span> any <span class="fu">.</span> (<span class="fu">==</span>)</a>
+<a class="sourceLine" id="cb1-71" data-line-number="71"></a>
+<a class="sourceLine" id="cb1-72" data-line-number="72"><span class="ot">myReverse ::</span> [a] <span class="ot">-&gt;</span> [a]</a>
+<a class="sourceLine" id="cb1-73" data-line-number="73">myReverse <span class="fu">=</span> foldl (flip (<span class="fu">:</span>)) []</a>
+<a class="sourceLine" id="cb1-74" data-line-number="74"></a>
+<a class="sourceLine" id="cb1-75" data-line-number="75"><span class="ot">myMap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]</a>
+<a class="sourceLine" id="cb1-76" data-line-number="76">myMap f <span class="fu">=</span> foldr ((<span class="fu">:</span>) <span class="fu">.</span> f) []</a>
+<a class="sourceLine" id="cb1-77" data-line-number="77"></a>
+<a class="sourceLine" id="cb1-78" data-line-number="78"><span class="ot">myFilter ::</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]</a>
+<a class="sourceLine" id="cb1-79" data-line-number="79">myFilter f <span class="fu">=</span></a>
+<a class="sourceLine" id="cb1-80" data-line-number="80">  foldr</a>
+<a class="sourceLine" id="cb1-81" data-line-number="81">    (\a as <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb1-82" data-line-number="82">       <span class="kw">if</span> f a</a>
+<a class="sourceLine" id="cb1-83" data-line-number="83">         <span class="kw">then</span> a <span class="fu">:</span> as</a>
+<a class="sourceLine" id="cb1-84" data-line-number="84">         <span class="kw">else</span> as)</a>
+<a class="sourceLine" id="cb1-85" data-line-number="85">    []</a>
+<a class="sourceLine" id="cb1-86" data-line-number="86"></a>
+<a class="sourceLine" id="cb1-87" data-line-number="87"><span class="ot">squish ::</span> [[a]] <span class="ot">-&gt;</span> [a]</a>
+<a class="sourceLine" id="cb1-88" data-line-number="88">squish <span class="fu">=</span> foldr (<span class="fu">++</span>) []</a>
+<a class="sourceLine" id="cb1-89" data-line-number="89"></a>
+<a class="sourceLine" id="cb1-90" data-line-number="90"><span class="ot">squishMap ::</span> (a <span class="ot">-&gt;</span> [b]) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [b]</a>
+<a class="sourceLine" id="cb1-91" data-line-number="91">squishMap f <span class="fu">=</span> foldr ((<span class="fu">++</span>) <span class="fu">.</span> f) []</a>
+<a class="sourceLine" id="cb1-92" data-line-number="92"></a>
+<a class="sourceLine" id="cb1-93" data-line-number="93"><span class="ot">squishAgain ::</span> [[a]] <span class="ot">-&gt;</span> [a]</a>
+<a class="sourceLine" id="cb1-94" data-line-number="94">squishAgain <span class="fu">=</span> squishMap id</a>
+<a class="sourceLine" id="cb1-95" data-line-number="95"></a>
+<a class="sourceLine" id="cb1-96" data-line-number="96"><span class="ot">myMaximumBy ::</span> (a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Ordering</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> a</a>
+<a class="sourceLine" id="cb1-97" data-line-number="97">myMaximumBy f (a<span class="fu">:</span>as) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb1-98" data-line-number="98">  foldl</a>
+<a class="sourceLine" id="cb1-99" data-line-number="99">    (\acc a' <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb1-100" data-line-number="100">       <span class="kw">if</span> f acc a' <span class="fu">==</span> <span class="dt">GT</span></a>
+<a class="sourceLine" id="cb1-101" data-line-number="101">         <span class="kw">then</span> acc</a>
+<a class="sourceLine" id="cb1-102" data-line-number="102">         <span class="kw">else</span> a')</a>
+<a class="sourceLine" id="cb1-103" data-line-number="103">    a</a>
+<a class="sourceLine" id="cb1-104" data-line-number="104">    as</a>
+<a class="sourceLine" id="cb1-105" data-line-number="105"></a>
+<a class="sourceLine" id="cb1-106" data-line-number="106"><span class="ot">myMinimumBy ::</span> (a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Ordering</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> a</a>
+<a class="sourceLine" id="cb1-107" data-line-number="107">myMinimumBy f (a<span class="fu">:</span>as) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb1-108" data-line-number="108">  foldl</a>
+<a class="sourceLine" id="cb1-109" data-line-number="109">    (\acc a' <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb1-110" data-line-number="110">       <span class="kw">if</span> f acc a' <span class="fu">==</span> <span class="dt">LT</span></a>
+<a class="sourceLine" id="cb1-111" data-line-number="111">         <span class="kw">then</span> acc</a>
+<a class="sourceLine" id="cb1-112" data-line-number="112">         <span class="kw">else</span> a')</a>
+<a class="sourceLine" id="cb1-113" data-line-number="113">    a</a>
+<a class="sourceLine" id="cb1-114" data-line-number="114">    as</a>
+<a class="sourceLine" id="cb1-115" data-line-number="115"></a>
+<a class="sourceLine" id="cb1-116" data-line-number="116"><span class="ot">spec ::</span> <span class="dt">SpecWith</span> ()</a>
+<a class="sourceLine" id="cb1-117" data-line-number="117">spec <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-118" data-line-number="118">  describe <span class="st">&quot;database processing&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-119" data-line-number="119">    it <span class="st">&quot;filterDbDate gets the dates&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-120" data-line-number="120">      filterDbDate theDatabase <span class="ot">`shouldBe`</span></a>
+<a class="sourceLine" id="cb1-121" data-line-number="121">      [ <span class="dt">UTCTime</span> (fromGregorian <span class="dv">1911</span> <span class="dv">5</span> <span class="dv">1</span>) (secondsToDiffTime <span class="dv">34123</span>)</a>
+<a class="sourceLine" id="cb1-122" data-line-number="122">      , <span class="dt">UTCTime</span> (fromGregorian <span class="dv">1921</span> <span class="dv">5</span> <span class="dv">1</span>) (secondsToDiffTime <span class="dv">34123</span>)</a>
+<a class="sourceLine" id="cb1-123" data-line-number="123">      ]</a>
+<a class="sourceLine" id="cb1-124" data-line-number="124">    it <span class="st">&quot;filterDbNumber gets the numbers&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-125" data-line-number="125">      filterDbNumber theDatabase <span class="ot">`shouldBe`</span> [<span class="dv">9001</span>, <span class="dv">9003</span>]</a>
+<a class="sourceLine" id="cb1-126" data-line-number="126">    it <span class="st">&quot;mostRecent gets most recent date&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-127" data-line-number="127">      mostRecent theDatabase <span class="ot">`shouldBe`</span></a>
+<a class="sourceLine" id="cb1-128" data-line-number="128">      <span class="dt">UTCTime</span> (fromGregorian <span class="dv">1921</span> <span class="dv">5</span> <span class="dv">1</span>) (secondsToDiffTime <span class="dv">34123</span>)</a>
+<a class="sourceLine" id="cb1-129" data-line-number="129">    it <span class="st">&quot;sumDb sums the numbers&quot;</span> <span class="fu">$</span> sumDb theDatabase <span class="ot">`shouldBe`</span> <span class="dv">18004</span></a>
+<a class="sourceLine" id="cb1-130" data-line-number="130">    it <span class="st">&quot;avgDb averages the numbers&quot;</span> <span class="fu">$</span> avgDb theDatabase <span class="ot">`shouldBe`</span> <span class="dv">9002</span></a>
+<a class="sourceLine" id="cb1-131" data-line-number="131">  describe <span class="st">&quot;scan exercises&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-132" data-line-number="132">    it <span class="st">&quot;first 20 fibs&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-133" data-line-number="133">      take <span class="dv">20</span> fibs <span class="ot">`shouldBe`</span></a>
+<a class="sourceLine" id="cb1-134" data-line-number="134">      [ <span class="dv">1</span></a>
+<a class="sourceLine" id="cb1-135" data-line-number="135">      , <span class="dv">1</span></a>
+<a class="sourceLine" id="cb1-136" data-line-number="136">      , <span class="dv">2</span></a>
+<a class="sourceLine" id="cb1-137" data-line-number="137">      , <span class="dv">3</span></a>
+<a class="sourceLine" id="cb1-138" data-line-number="138">      , <span class="dv">5</span></a>
+<a class="sourceLine" id="cb1-139" data-line-number="139">      , <span class="dv">8</span></a>
+<a class="sourceLine" id="cb1-140" data-line-number="140">      , <span class="dv">13</span></a>
+<a class="sourceLine" id="cb1-141" data-line-number="141">      , <span class="dv">21</span></a>
+<a class="sourceLine" id="cb1-142" data-line-number="142">      , <span class="dv">34</span></a>
+<a class="sourceLine" id="cb1-143" data-line-number="143">      , <span class="dv">55</span></a>
+<a class="sourceLine" id="cb1-144" data-line-number="144">      , <span class="dv">89</span></a>
+<a class="sourceLine" id="cb1-145" data-line-number="145">      , <span class="dv">144</span></a>
+<a class="sourceLine" id="cb1-146" data-line-number="146">      , <span class="dv">233</span></a>
+<a class="sourceLine" id="cb1-147" data-line-number="147">      , <span class="dv">377</span></a>
+<a class="sourceLine" id="cb1-148" data-line-number="148">      , <span class="dv">610</span></a>
+<a class="sourceLine" id="cb1-149" data-line-number="149">      , <span class="dv">987</span></a>
+<a class="sourceLine" id="cb1-150" data-line-number="150">      , <span class="dv">1597</span></a>
+<a class="sourceLine" id="cb1-151" data-line-number="151">      , <span class="dv">2584</span></a>
+<a class="sourceLine" id="cb1-152" data-line-number="152">      , <span class="dv">4181</span></a>
+<a class="sourceLine" id="cb1-153" data-line-number="153">      , <span class="dv">6765</span></a>
+<a class="sourceLine" id="cb1-154" data-line-number="154">      ]</a>
+<a class="sourceLine" id="cb1-155" data-line-number="155">    it <span class="st">&quot;fibs under 100&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-156" data-line-number="156">      takeWhile (<span class="fu">&lt;</span> <span class="dv">100</span>) fibs <span class="ot">`shouldBe`</span> [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">13</span>, <span class="dv">21</span>, <span class="dv">34</span>, <span class="dv">55</span>, <span class="dv">89</span>]</a>
+<a class="sourceLine" id="cb1-157" data-line-number="157">    it <span class="st">&quot;first 5 factorials&quot;</span> <span class="fu">$</span> take <span class="dv">5</span> factorials <span class="ot">`shouldBe`</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">24</span>, <span class="dv">120</span>]</a>
+<a class="sourceLine" id="cb1-158" data-line-number="158">  describe <span class="st">&quot;chapter review&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-159" data-line-number="159">    it <span class="st">&quot;all stop-vowel-stop combos&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-160" data-line-number="160">      length</a>
+<a class="sourceLine" id="cb1-161" data-line-number="161">        [ [stop1, vowel, stop2]</a>
+<a class="sourceLine" id="cb1-162" data-line-number="162">        <span class="fu">|</span> stop1 <span class="ot">&lt;-</span> stops</a>
+<a class="sourceLine" id="cb1-163" data-line-number="163">        , vowel <span class="ot">&lt;-</span> vowels</a>
+<a class="sourceLine" id="cb1-164" data-line-number="164">        , stop2 <span class="ot">&lt;-</span> stops</a>
+<a class="sourceLine" id="cb1-165" data-line-number="165">        ] <span class="ot">`shouldBe`</span></a>
+<a class="sourceLine" id="cb1-166" data-line-number="166">      length stops <span class="fu">*</span></a>
+<a class="sourceLine" id="cb1-167" data-line-number="167">      length vowels <span class="fu">*</span></a>
+<a class="sourceLine" id="cb1-168" data-line-number="168">      length stops</a>
+<a class="sourceLine" id="cb1-169" data-line-number="169">    it <span class="st">&quot;all p-vowel-stop combos&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-170" data-line-number="170">      length</a>
+<a class="sourceLine" id="cb1-171" data-line-number="171">        [ [stop1, vowel, stop2]</a>
+<a class="sourceLine" id="cb1-172" data-line-number="172">        <span class="fu">|</span> stop1 <span class="ot">&lt;-</span> stops</a>
+<a class="sourceLine" id="cb1-173" data-line-number="173">        , vowel <span class="ot">&lt;-</span> vowels</a>
+<a class="sourceLine" id="cb1-174" data-line-number="174">        , stop2 <span class="ot">&lt;-</span> stops</a>
+<a class="sourceLine" id="cb1-175" data-line-number="175">        , stop1 <span class="fu">==</span> <span class="ch">'p'</span></a>
+<a class="sourceLine" id="cb1-176" data-line-number="176">        ] <span class="ot">`shouldBe`</span></a>
+<a class="sourceLine" id="cb1-177" data-line-number="177">      length vowels <span class="fu">*</span></a>
+<a class="sourceLine" id="cb1-178" data-line-number="178">      length stops</a>
+<a class="sourceLine" id="cb1-179" data-line-number="179">    it <span class="st">&quot;calculates the average word length&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-180" data-line-number="180">      seekritFunk <span class="st">&quot;hi there you hello&quot;</span> <span class="ot">`shouldBe`</span> <span class="fl">3.75</span></a>
+<a class="sourceLine" id="cb1-181" data-line-number="181">  describe <span class="st">&quot;rewrite using folds&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-182" data-line-number="182">    describe <span class="st">&quot;myOr&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-183" data-line-number="183">      it <span class="st">&quot;empty list&quot;</span> <span class="fu">$</span> myOr [] <span class="ot">`shouldBe`</span> <span class="dt">False</span></a>
+<a class="sourceLine" id="cb1-184" data-line-number="184">      it <span class="st">&quot;with a True&quot;</span> <span class="fu">$</span> myOr [<span class="dt">False</span>, <span class="dt">True</span>] <span class="ot">`shouldBe`</span> <span class="dt">True</span></a>
+<a class="sourceLine" id="cb1-185" data-line-number="185">      it <span class="st">&quot;all False&quot;</span> <span class="fu">$</span> myOr [<span class="dt">False</span>, <span class="dt">False</span>] <span class="ot">`shouldBe`</span> <span class="dt">False</span></a>
+<a class="sourceLine" id="cb1-186" data-line-number="186">    describe <span class="st">&quot;myAny&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-187" data-line-number="187">      it <span class="st">&quot;empty list&quot;</span> <span class="fu">$</span> myAny even [] <span class="ot">`shouldBe`</span> <span class="dt">False</span></a>
+<a class="sourceLine" id="cb1-188" data-line-number="188">      it <span class="st">&quot;False&quot;</span> <span class="fu">$</span> myAny even [<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>] <span class="ot">`shouldBe`</span> <span class="dt">False</span></a>
+<a class="sourceLine" id="cb1-189" data-line-number="189">      it <span class="st">&quot;True&quot;</span> <span class="fu">$</span> myAny odd [<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>] <span class="ot">`shouldBe`</span> <span class="dt">True</span></a>
+<a class="sourceLine" id="cb1-190" data-line-number="190">    describe <span class="st">&quot;myElem&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-191" data-line-number="191">      it <span class="st">&quot;empty list&quot;</span> <span class="fu">$</span> myElem <span class="dv">1</span> [] <span class="ot">`shouldBe`</span> <span class="dt">False</span></a>
+<a class="sourceLine" id="cb1-192" data-line-number="192">      it <span class="st">&quot;False&quot;</span> <span class="fu">$</span> myElem <span class="dv">1</span> [<span class="dv">2</span> <span class="fu">..</span> <span class="dv">10</span>] <span class="ot">`shouldBe`</span> <span class="dt">False</span></a>
+<a class="sourceLine" id="cb1-193" data-line-number="193">      it <span class="st">&quot;True&quot;</span> <span class="fu">$</span> myElem <span class="dv">1</span> [<span class="dv">1</span> <span class="fu">..</span> <span class="dv">10</span>] <span class="ot">`shouldBe`</span> <span class="dt">True</span></a>
+<a class="sourceLine" id="cb1-194" data-line-number="194">    describe <span class="st">&quot;myElem2&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-195" data-line-number="195">      it <span class="st">&quot;empty list&quot;</span> <span class="fu">$</span> myElem2 <span class="dv">1</span> [] <span class="ot">`shouldBe`</span> <span class="dt">False</span></a>
+<a class="sourceLine" id="cb1-196" data-line-number="196">      it <span class="st">&quot;False&quot;</span> <span class="fu">$</span> myElem2 <span class="dv">1</span> [<span class="dv">2</span> <span class="fu">..</span> <span class="dv">10</span>] <span class="ot">`shouldBe`</span> <span class="dt">False</span></a>
+<a class="sourceLine" id="cb1-197" data-line-number="197">      it <span class="st">&quot;True&quot;</span> <span class="fu">$</span> myElem2 <span class="dv">1</span> [<span class="dv">1</span> <span class="fu">..</span> <span class="dv">10</span>] <span class="ot">`shouldBe`</span> <span class="dt">True</span></a>
+<a class="sourceLine" id="cb1-198" data-line-number="198">    describe <span class="st">&quot;myReverse&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-199" data-line-number="199">      it <span class="st">&quot;empty&quot;</span> <span class="fu">$</span> myReverse <span class="st">&quot;&quot;</span> <span class="ot">`shouldBe`</span> <span class="st">&quot;&quot;</span></a>
+<a class="sourceLine" id="cb1-200" data-line-number="200">      it <span class="st">&quot;String&quot;</span> <span class="fu">$</span> myReverse <span class="st">&quot;blah&quot;</span> <span class="ot">`shouldBe`</span> <span class="st">&quot;halb&quot;</span></a>
+<a class="sourceLine" id="cb1-201" data-line-number="201">      it <span class="st">&quot;Nums&quot;</span> <span class="fu">$</span> myReverse [<span class="dv">1</span> <span class="fu">..</span> <span class="dv">5</span>] <span class="ot">`shouldBe`</span> [<span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb1-202" data-line-number="202">    describe <span class="st">&quot;myMap&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-203" data-line-number="203">      it <span class="st">&quot;empty&quot;</span> <span class="fu">$</span> myMap (<span class="fu">+</span> <span class="dv">1</span>) [] <span class="ot">`shouldBe`</span> []</a>
+<a class="sourceLine" id="cb1-204" data-line-number="204">      it <span class="st">&quot;Nums&quot;</span> <span class="fu">$</span> myMap (<span class="fu">+</span> <span class="dv">1</span>) [<span class="dv">1</span> <span class="fu">..</span> <span class="dv">5</span>] <span class="ot">`shouldBe`</span> [<span class="dv">2</span> <span class="fu">..</span> <span class="dv">6</span>]</a>
+<a class="sourceLine" id="cb1-205" data-line-number="205">    describe <span class="st">&quot;myFilter&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-206" data-line-number="206">      it <span class="st">&quot;empty&quot;</span> <span class="fu">$</span> myFilter even [] <span class="ot">`shouldBe`</span> []</a>
+<a class="sourceLine" id="cb1-207" data-line-number="207">      it <span class="st">&quot;evens&quot;</span> <span class="fu">$</span> myFilter even [<span class="dv">1</span> <span class="fu">..</span> <span class="dv">5</span>] <span class="ot">`shouldBe`</span> [<span class="dv">2</span>, <span class="dv">4</span>]</a>
+<a class="sourceLine" id="cb1-208" data-line-number="208">      it <span class="st">&quot;odds&quot;</span> <span class="fu">$</span> myFilter odd [<span class="dv">1</span> <span class="fu">..</span> <span class="dv">5</span>] <span class="ot">`shouldBe`</span> [<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>]</a>
+<a class="sourceLine" id="cb1-209" data-line-number="209">    describe <span class="st">&quot;squish&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-210" data-line-number="210">      it <span class="st">&quot;flattens&quot;</span> <span class="fu">$</span> squish [[<span class="dv">1</span> <span class="fu">..</span> <span class="dv">3</span>], [<span class="dv">4</span> <span class="fu">..</span> <span class="dv">6</span>]] <span class="ot">`shouldBe`</span> [<span class="dv">1</span> <span class="fu">..</span> <span class="dv">6</span>]</a>
+<a class="sourceLine" id="cb1-211" data-line-number="211">    describe <span class="st">&quot;squishMap&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-212" data-line-number="212">      it <span class="st">&quot;maps and flattens&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-213" data-line-number="213">        squishMap (\x <span class="ot">-&gt;</span> [<span class="dv">1</span>, x, <span class="dv">3</span>]) [<span class="dv">2</span>, <span class="dv">4</span>] <span class="ot">`shouldBe`</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">3</span>]</a>
+<a class="sourceLine" id="cb1-214" data-line-number="214">    describe <span class="st">&quot;squishAgain&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-215" data-line-number="215">      it <span class="st">&quot;flattens&quot;</span> <span class="fu">$</span> squishAgain [[<span class="dv">1</span> <span class="fu">..</span> <span class="dv">3</span>], [<span class="dv">4</span> <span class="fu">..</span> <span class="dv">6</span>]] <span class="ot">`shouldBe`</span> [<span class="dv">1</span> <span class="fu">..</span> <span class="dv">6</span>]</a>
+<a class="sourceLine" id="cb1-216" data-line-number="216">    describe <span class="st">&quot;myMaximumBy&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-217" data-line-number="217">      it <span class="st">&quot;gets the max&quot;</span> <span class="fu">$</span> myMaximumBy compare [<span class="dv">1</span>, <span class="dv">53</span>, <span class="dv">9001</span>, <span class="dv">10</span>] <span class="ot">`shouldBe`</span> <span class="dv">9001</span></a>
+<a class="sourceLine" id="cb1-218" data-line-number="218">      it <span class="st">&quot;returns the last value that returned GT&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-219" data-line-number="219">        myMaximumBy (\_ _ <span class="ot">-&gt;</span> <span class="dt">GT</span>) [<span class="dv">1</span>, <span class="dv">53</span>, <span class="dv">9001</span>, <span class="dv">10</span>] <span class="ot">`shouldBe`</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb1-220" data-line-number="220">      it <span class="st">&quot;returns the last value that returned GT&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-221" data-line-number="221">        myMaximumBy (\_ _ <span class="ot">-&gt;</span> <span class="dt">LT</span>) [<span class="dv">1</span>, <span class="dv">53</span>, <span class="dv">9001</span>, <span class="dv">10</span>] <span class="ot">`shouldBe`</span> <span class="dv">10</span></a>
+<a class="sourceLine" id="cb1-222" data-line-number="222">    describe <span class="st">&quot;myMinimumBy&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-223" data-line-number="223">      it <span class="st">&quot;gets the min&quot;</span> <span class="fu">$</span> myMinimumBy compare [<span class="dv">1</span>, <span class="dv">53</span>, <span class="dv">9001</span>, <span class="dv">10</span>] <span class="ot">`shouldBe`</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb1-224" data-line-number="224">      it <span class="st">&quot;returns the last value that returned LT&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-225" data-line-number="225">        myMinimumBy (\_ _ <span class="ot">-&gt;</span> <span class="dt">GT</span>) [<span class="dv">1</span>, <span class="dv">53</span>, <span class="dv">9001</span>, <span class="dv">10</span>] <span class="ot">`shouldBe`</span> <span class="dv">10</span></a>
+<a class="sourceLine" id="cb1-226" data-line-number="226">      it <span class="st">&quot;returns the last value that returned LT&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-227" data-line-number="227">        myMinimumBy (\_ _ <span class="ot">-&gt;</span> <span class="dt">LT</span>) [<span class="dv">1</span>, <span class="dv">53</span>, <span class="dv">9001</span>, <span class="dv">10</span>] <span class="ot">`shouldBe`</span> <span class="dv">1</span></a></code></pre></div>
+        </div>
+        <div id="footer">
+            Site generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>

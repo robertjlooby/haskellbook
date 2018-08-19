@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Haskell Programming - Chapter 7</title>
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+        <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../">Haskell Programming</a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Chapter 7</h1>
+
+            <hr />
+<div class="sourceCode" id="cb1"><pre class="sourceCode literate haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Chapter07</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Test.Hspec</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="ot">tensDigit ::</span> <span class="dt">Integral</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">tensDigit x <span class="fu">=</span> d</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">    (xLast, _) <span class="fu">=</span> x <span class="ot">`divMod`</span> <span class="dv">10</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">    (_, d) <span class="fu">=</span> xLast <span class="ot">`divMod`</span> <span class="dv">10</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"><span class="ot">hundredsDigit ::</span> <span class="dt">Integral</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">hundredsDigit x <span class="fu">=</span> d</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">    (xLast, _) <span class="fu">=</span> x <span class="ot">`divMod`</span> <span class="dv">100</span></a>
+<a class="sourceLine" id="cb1-15" data-line-number="15">    (_, d) <span class="fu">=</span> xLast <span class="ot">`divMod`</span> <span class="dv">10</span></a>
+<a class="sourceLine" id="cb1-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb1-17" data-line-number="17"><span class="ot">foldBool1 ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> a</a>
+<a class="sourceLine" id="cb1-18" data-line-number="18">foldBool1 x y b <span class="fu">=</span></a>
+<a class="sourceLine" id="cb1-19" data-line-number="19">  <span class="kw">case</span> b <span class="kw">of</span></a>
+<a class="sourceLine" id="cb1-20" data-line-number="20">    <span class="dt">True</span> <span class="ot">-&gt;</span> x</a>
+<a class="sourceLine" id="cb1-21" data-line-number="21">    <span class="dt">False</span> <span class="ot">-&gt;</span> y</a>
+<a class="sourceLine" id="cb1-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb1-23" data-line-number="23"><span class="ot">foldBool2 ::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> a</a>
+<a class="sourceLine" id="cb1-24" data-line-number="24">foldBool2 x y b</a>
+<a class="sourceLine" id="cb1-25" data-line-number="25">  <span class="fu">|</span> b <span class="fu">=</span> x</a>
+<a class="sourceLine" id="cb1-26" data-line-number="26">  <span class="fu">|</span> otherwise <span class="fu">=</span> y</a>
+<a class="sourceLine" id="cb1-27" data-line-number="27"></a>
+<a class="sourceLine" id="cb1-28" data-line-number="28"><span class="ot">g ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a, c) <span class="ot">-&gt;</span> (b, c)</a>
+<a class="sourceLine" id="cb1-29" data-line-number="29">g f (a, c) <span class="fu">=</span> (f a, c)</a>
+<a class="sourceLine" id="cb1-30" data-line-number="30"></a>
+<a class="sourceLine" id="cb1-31" data-line-number="31"><span class="ot">roundTrip ::</span> (<span class="dt">Show</span> a, <span class="dt">Read</span> b) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> b</a>
+<a class="sourceLine" id="cb1-32" data-line-number="32">roundTrip <span class="fu">=</span> read <span class="fu">.</span> show</a>
+<a class="sourceLine" id="cb1-33" data-line-number="33"></a>
+<a class="sourceLine" id="cb1-34" data-line-number="34"><span class="ot">myWords ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>]</a>
+<a class="sourceLine" id="cb1-35" data-line-number="35">myWords <span class="st">&quot;&quot;</span> <span class="fu">=</span> []</a>
+<a class="sourceLine" id="cb1-36" data-line-number="36">myWords string <span class="fu">=</span> firstWord <span class="fu">:</span> myWords restOfString</a>
+<a class="sourceLine" id="cb1-37" data-line-number="37">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-38" data-line-number="38">    firstWord <span class="fu">=</span> takeWhile (<span class="fu">/=</span> <span class="ch">' '</span>) string</a>
+<a class="sourceLine" id="cb1-39" data-line-number="39">    restOfString <span class="fu">=</span> dropWhile (<span class="fu">==</span> <span class="ch">' '</span>) <span class="fu">.</span> dropWhile (<span class="fu">/=</span> <span class="ch">' '</span>) <span class="fu">$</span> string</a>
+<a class="sourceLine" id="cb1-40" data-line-number="40"></a>
+<a class="sourceLine" id="cb1-41" data-line-number="41"><span class="ot">myLines ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>]</a>
+<a class="sourceLine" id="cb1-42" data-line-number="42">myLines <span class="st">&quot;&quot;</span> <span class="fu">=</span> []</a>
+<a class="sourceLine" id="cb1-43" data-line-number="43">myLines string <span class="fu">=</span> firstLine <span class="fu">:</span> myLines restOfString</a>
+<a class="sourceLine" id="cb1-44" data-line-number="44">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-45" data-line-number="45">    firstLine <span class="fu">=</span> takeWhile (<span class="fu">/=</span> <span class="ch">'\n'</span>) string</a>
+<a class="sourceLine" id="cb1-46" data-line-number="46">    restOfString <span class="fu">=</span> dropWhile (<span class="fu">==</span> <span class="ch">'\n'</span>) <span class="fu">.</span> dropWhile (<span class="fu">/=</span> <span class="ch">'\n'</span>) <span class="fu">$</span> string</a>
+<a class="sourceLine" id="cb1-47" data-line-number="47"></a>
+<a class="sourceLine" id="cb1-48" data-line-number="48"><span class="ot">splitOn ::</span> <span class="dt">Char</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>]</a>
+<a class="sourceLine" id="cb1-49" data-line-number="49">splitOn _ <span class="st">&quot;&quot;</span> <span class="fu">=</span> []</a>
+<a class="sourceLine" id="cb1-50" data-line-number="50">splitOn c string <span class="fu">=</span> firstLine <span class="fu">:</span> splitOn c restOfString</a>
+<a class="sourceLine" id="cb1-51" data-line-number="51">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-52" data-line-number="52">    firstLine <span class="fu">=</span> takeWhile (<span class="fu">/=</span> c) string</a>
+<a class="sourceLine" id="cb1-53" data-line-number="53">    restOfString <span class="fu">=</span> dropWhile (<span class="fu">==</span> c) <span class="fu">.</span> dropWhile (<span class="fu">/=</span> c) <span class="fu">$</span> string</a>
+<a class="sourceLine" id="cb1-54" data-line-number="54"></a>
+<a class="sourceLine" id="cb1-55" data-line-number="55"><span class="ot">myWords2 ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>]</a>
+<a class="sourceLine" id="cb1-56" data-line-number="56">myWords2 <span class="fu">=</span> splitOn <span class="ch">' '</span></a>
+<a class="sourceLine" id="cb1-57" data-line-number="57"></a>
+<a class="sourceLine" id="cb1-58" data-line-number="58"><span class="ot">myLines2 ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>]</a>
+<a class="sourceLine" id="cb1-59" data-line-number="59">myLines2 <span class="fu">=</span> splitOn <span class="ch">'\n'</span></a>
+<a class="sourceLine" id="cb1-60" data-line-number="60"></a>
+<a class="sourceLine" id="cb1-61" data-line-number="61">mySqr <span class="fu">=</span> [x <span class="fu">^</span> <span class="dv">2</span> <span class="fu">|</span> x <span class="ot">&lt;-</span> [<span class="dv">1</span> <span class="fu">..</span> <span class="dv">5</span>]]</a>
+<a class="sourceLine" id="cb1-62" data-line-number="62"></a>
+<a class="sourceLine" id="cb1-63" data-line-number="63">myCube <span class="fu">=</span> [y <span class="fu">^</span> <span class="dv">3</span> <span class="fu">|</span> y <span class="ot">&lt;-</span> [<span class="dv">1</span> <span class="fu">..</span> <span class="dv">5</span>]]</a>
+<a class="sourceLine" id="cb1-64" data-line-number="64"></a>
+<a class="sourceLine" id="cb1-65" data-line-number="65">tuples <span class="fu">=</span> [(x, y) <span class="fu">|</span> x <span class="ot">&lt;-</span> mySqr, y <span class="ot">&lt;-</span> myCube]</a>
+<a class="sourceLine" id="cb1-66" data-line-number="66"></a>
+<a class="sourceLine" id="cb1-67" data-line-number="67">tuplesUnder50 <span class="fu">=</span> [(x, y) <span class="fu">|</span> x <span class="ot">&lt;-</span> mySqr, y <span class="ot">&lt;-</span> myCube, x <span class="fu">&lt;</span> <span class="dv">50</span>, y <span class="fu">&lt;</span> <span class="dv">50</span>]</a>
+<a class="sourceLine" id="cb1-68" data-line-number="68"></a>
+<a class="sourceLine" id="cb1-69" data-line-number="69">howManyTuplesUnder50 <span class="fu">=</span> length tuplesUnder50</a>
+<a class="sourceLine" id="cb1-70" data-line-number="70"></a>
+<a class="sourceLine" id="cb1-71" data-line-number="71">multiplesOfThree <span class="fu">=</span> filter (\x <span class="ot">-&gt;</span> x <span class="ot">`mod`</span> <span class="dv">3</span> <span class="fu">==</span> <span class="dv">0</span>) [<span class="dv">1</span> <span class="fu">..</span> <span class="dv">30</span>]</a>
+<a class="sourceLine" id="cb1-72" data-line-number="72"></a>
+<a class="sourceLine" id="cb1-73" data-line-number="73">numberOfMultiplesOfThree <span class="fu">=</span> length multiplesOfThree</a>
+<a class="sourceLine" id="cb1-74" data-line-number="74"></a>
+<a class="sourceLine" id="cb1-75" data-line-number="75">myFilter <span class="fu">=</span> filter (\word <span class="ot">-&gt;</span> not <span class="fu">$</span> elem word [<span class="st">&quot;a&quot;</span>, <span class="st">&quot;an&quot;</span>, <span class="st">&quot;the&quot;</span>]) <span class="fu">.</span> words</a>
+<a class="sourceLine" id="cb1-76" data-line-number="76"></a>
+<a class="sourceLine" id="cb1-77" data-line-number="77"><span class="ot">spec ::</span> <span class="dt">SpecWith</span> ()</a>
+<a class="sourceLine" id="cb1-78" data-line-number="78">spec <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-79" data-line-number="79">  describe <span class="st">&quot;tensDigit&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-80" data-line-number="80">    it <span class="st">&quot;for 1&quot;</span> <span class="fu">$</span> tensDigit <span class="dv">1</span> <span class="ot">`shouldBe`</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb1-81" data-line-number="81">    it <span class="st">&quot;for 123&quot;</span> <span class="fu">$</span> tensDigit <span class="dv">123</span> <span class="ot">`shouldBe`</span> <span class="dv">2</span></a>
+<a class="sourceLine" id="cb1-82" data-line-number="82">    it <span class="st">&quot;for 1234&quot;</span> <span class="fu">$</span> tensDigit <span class="dv">1234</span> <span class="ot">`shouldBe`</span> <span class="dv">3</span></a>
+<a class="sourceLine" id="cb1-83" data-line-number="83">  describe <span class="st">&quot;hundredsDigit&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-84" data-line-number="84">    it <span class="st">&quot;for 1&quot;</span> <span class="fu">$</span> hundredsDigit <span class="dv">1</span> <span class="ot">`shouldBe`</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb1-85" data-line-number="85">    it <span class="st">&quot;for 123&quot;</span> <span class="fu">$</span> hundredsDigit <span class="dv">123</span> <span class="ot">`shouldBe`</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb1-86" data-line-number="86">    it <span class="st">&quot;for 1234&quot;</span> <span class="fu">$</span> hundredsDigit <span class="dv">1234</span> <span class="ot">`shouldBe`</span> <span class="dv">2</span></a>
+<a class="sourceLine" id="cb1-87" data-line-number="87">  describe <span class="st">&quot;foldBool with case&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-88" data-line-number="88">    it <span class="st">&quot;with True&quot;</span> <span class="fu">$</span> foldBool1 <span class="dv">1</span> <span class="dv">2</span> <span class="dt">True</span> <span class="ot">`shouldBe`</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb1-89" data-line-number="89">    it <span class="st">&quot;with False&quot;</span> <span class="fu">$</span> foldBool1 <span class="dv">1</span> <span class="dv">2</span> <span class="dt">False</span> <span class="ot">`shouldBe`</span> <span class="dv">2</span></a>
+<a class="sourceLine" id="cb1-90" data-line-number="90">  describe <span class="st">&quot;foldBool with guard&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-91" data-line-number="91">    it <span class="st">&quot;with True&quot;</span> <span class="fu">$</span> foldBool2 <span class="dv">1</span> <span class="dv">2</span> <span class="dt">True</span> <span class="ot">`shouldBe`</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb1-92" data-line-number="92">    it <span class="st">&quot;with False&quot;</span> <span class="fu">$</span> foldBool2 <span class="dv">1</span> <span class="dv">2</span> <span class="dt">False</span> <span class="ot">`shouldBe`</span> <span class="dv">2</span></a>
+<a class="sourceLine" id="cb1-93" data-line-number="93">  describe <span class="st">&quot;g&quot;</span> <span class="fu">$</span> <span class="kw">do</span> it <span class="st">&quot;works&quot;</span> <span class="fu">$</span> g (<span class="dv">1</span> <span class="fu">+</span>) (<span class="dv">2</span>, <span class="ch">'a'</span>) <span class="ot">`shouldBe`</span> (<span class="dv">3</span>, <span class="ch">'a'</span>)</a>
+<a class="sourceLine" id="cb1-94" data-line-number="94">  describe <span class="st">&quot;roundTrip&quot;</span> <span class="fu">$</span> <span class="kw">do</span> it <span class="st">&quot;works&quot;</span> <span class="fu">$</span> roundTrip <span class="dv">4</span> <span class="ot">`shouldBe`</span> id <span class="dv">4</span></a>
+<a class="sourceLine" id="cb1-95" data-line-number="95">  describe <span class="st">&quot;myWords&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-96" data-line-number="96">    it <span class="st">&quot;works&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-97" data-line-number="97">      myWords <span class="st">&quot;sheryl wants  fun&quot;</span> <span class="ot">`shouldBe`</span> [<span class="st">&quot;sheryl&quot;</span>, <span class="st">&quot;wants&quot;</span>, <span class="st">&quot;fun&quot;</span>]</a>
+<a class="sourceLine" id="cb1-98" data-line-number="98">  describe <span class="st">&quot;myLines&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-99" data-line-number="99">    it <span class="st">&quot;works&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-100" data-line-number="100">      myLines <span class="st">&quot;sheryl\nwants\nfun&quot;</span> <span class="ot">`shouldBe`</span> [<span class="st">&quot;sheryl&quot;</span>, <span class="st">&quot;wants&quot;</span>, <span class="st">&quot;fun&quot;</span>]</a>
+<a class="sourceLine" id="cb1-101" data-line-number="101">  describe <span class="st">&quot;splitOn&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-102" data-line-number="102">    it <span class="st">&quot;spaces&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-103" data-line-number="103">      splitOn <span class="ch">' '</span> <span class="st">&quot;sheryl wants  fun&quot;</span> <span class="ot">`shouldBe`</span> [<span class="st">&quot;sheryl&quot;</span>, <span class="st">&quot;wants&quot;</span>, <span class="st">&quot;fun&quot;</span>]</a>
+<a class="sourceLine" id="cb1-104" data-line-number="104">    it <span class="st">&quot;newlines&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-105" data-line-number="105">      splitOn <span class="ch">'\n'</span> <span class="st">&quot;sheryl\nwants\nfun&quot;</span> <span class="ot">`shouldBe`</span> [<span class="st">&quot;sheryl&quot;</span>, <span class="st">&quot;wants&quot;</span>, <span class="st">&quot;fun&quot;</span>]</a>
+<a class="sourceLine" id="cb1-106" data-line-number="106">    it <span class="st">&quot;myWords2&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-107" data-line-number="107">      myWords2 <span class="st">&quot;sheryl wants  fun&quot;</span> <span class="ot">`shouldBe`</span> [<span class="st">&quot;sheryl&quot;</span>, <span class="st">&quot;wants&quot;</span>, <span class="st">&quot;fun&quot;</span>]</a>
+<a class="sourceLine" id="cb1-108" data-line-number="108">    it <span class="st">&quot;myLines2&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-109" data-line-number="109">      myLines2 <span class="st">&quot;sheryl\nwants\nfun&quot;</span> <span class="ot">`shouldBe`</span> [<span class="st">&quot;sheryl&quot;</span>, <span class="st">&quot;wants&quot;</span>, <span class="st">&quot;fun&quot;</span>]</a>
+<a class="sourceLine" id="cb1-110" data-line-number="110">  describe <span class="st">&quot;lists&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-111" data-line-number="111">    it <span class="st">&quot;tuples&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-112" data-line-number="112">      tuples <span class="ot">`shouldBe`</span></a>
+<a class="sourceLine" id="cb1-113" data-line-number="113">      [ (<span class="dv">1</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">1</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-114" data-line-number="114">      , (<span class="dv">1</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">2</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-115" data-line-number="115">      , (<span class="dv">1</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">3</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-116" data-line-number="116">      , (<span class="dv">1</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">4</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-117" data-line-number="117">      , (<span class="dv">1</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">5</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-118" data-line-number="118">      , (<span class="dv">2</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">1</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-119" data-line-number="119">      , (<span class="dv">2</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">2</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-120" data-line-number="120">      , (<span class="dv">2</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">3</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-121" data-line-number="121">      , (<span class="dv">2</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">4</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-122" data-line-number="122">      , (<span class="dv">2</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">5</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-123" data-line-number="123">      , (<span class="dv">3</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">1</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-124" data-line-number="124">      , (<span class="dv">3</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">2</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-125" data-line-number="125">      , (<span class="dv">3</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">3</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-126" data-line-number="126">      , (<span class="dv">3</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">4</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-127" data-line-number="127">      , (<span class="dv">3</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">5</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-128" data-line-number="128">      , (<span class="dv">4</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">1</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-129" data-line-number="129">      , (<span class="dv">4</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">2</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-130" data-line-number="130">      , (<span class="dv">4</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">3</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-131" data-line-number="131">      , (<span class="dv">4</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">4</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-132" data-line-number="132">      , (<span class="dv">4</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">5</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-133" data-line-number="133">      , (<span class="dv">5</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">1</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-134" data-line-number="134">      , (<span class="dv">5</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">2</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-135" data-line-number="135">      , (<span class="dv">5</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">3</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-136" data-line-number="136">      , (<span class="dv">5</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">4</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-137" data-line-number="137">      , (<span class="dv">5</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">5</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-138" data-line-number="138">      ]</a>
+<a class="sourceLine" id="cb1-139" data-line-number="139">    it <span class="st">&quot;tuplesUnder50&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-140" data-line-number="140">      tuplesUnder50 <span class="ot">`shouldBe`</span></a>
+<a class="sourceLine" id="cb1-141" data-line-number="141">      [ (<span class="dv">1</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">1</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-142" data-line-number="142">      , (<span class="dv">1</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">2</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-143" data-line-number="143">      , (<span class="dv">1</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">3</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-144" data-line-number="144">      , (<span class="dv">2</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">1</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-145" data-line-number="145">      , (<span class="dv">2</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">2</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-146" data-line-number="146">      , (<span class="dv">2</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">3</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-147" data-line-number="147">      , (<span class="dv">3</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">1</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-148" data-line-number="148">      , (<span class="dv">3</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">2</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-149" data-line-number="149">      , (<span class="dv">3</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">3</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-150" data-line-number="150">      , (<span class="dv">4</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">1</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-151" data-line-number="151">      , (<span class="dv">4</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">2</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-152" data-line-number="152">      , (<span class="dv">4</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">3</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-153" data-line-number="153">      , (<span class="dv">5</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">1</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-154" data-line-number="154">      , (<span class="dv">5</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">2</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-155" data-line-number="155">      , (<span class="dv">5</span> <span class="fu">^</span> <span class="dv">2</span>, <span class="dv">3</span> <span class="fu">^</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb1-156" data-line-number="156">      ]</a>
+<a class="sourceLine" id="cb1-157" data-line-number="157">    it <span class="st">&quot;howManyTuplesUnder50&quot;</span> <span class="fu">$</span> howManyTuplesUnder50 <span class="ot">`shouldBe`</span> <span class="dv">15</span></a>
+<a class="sourceLine" id="cb1-158" data-line-number="158">  describe <span class="st">&quot;filtering&quot;</span> <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb1-159" data-line-number="159">    it <span class="st">&quot;multiplesOfThree&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-160" data-line-number="160">      multiplesOfThree <span class="ot">`shouldBe`</span> [<span class="dv">3</span>, <span class="dv">6</span>, <span class="dv">9</span>, <span class="dv">12</span>, <span class="dv">15</span>, <span class="dv">18</span>, <span class="dv">21</span>, <span class="dv">24</span>, <span class="dv">27</span>, <span class="dv">30</span>]</a>
+<a class="sourceLine" id="cb1-161" data-line-number="161">    it <span class="st">&quot;numberOfMultiplesOfThree&quot;</span> <span class="fu">$</span> numberOfMultiplesOfThree <span class="ot">`shouldBe`</span> <span class="dv">10</span></a>
+<a class="sourceLine" id="cb1-162" data-line-number="162">    it <span class="st">&quot;myFilter&quot;</span> <span class="fu">$</span></a>
+<a class="sourceLine" id="cb1-163" data-line-number="163">      myFilter <span class="st">&quot;the brown dog was a goof&quot;</span> <span class="ot">`shouldBe`</span></a>
+<a class="sourceLine" id="cb1-164" data-line-number="164">      [<span class="st">&quot;brown&quot;</span>, <span class="st">&quot;dog&quot;</span>, <span class="st">&quot;was&quot;</span>, <span class="st">&quot;goof&quot;</span>]</a></code></pre></div>
+        </div>
+        <div id="footer">
+            Site generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>
