@@ -44,3 +44,7 @@ pushes it up where it's hosted on GitHub Pages at
 ### Running Chapter 26 hit counter
 
 1. `stack exec hit-counter -- <prefix>`
+
+### Running Chapter 28 benchmarks
+
+1. `stack exec benchmarks`
